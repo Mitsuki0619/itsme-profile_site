@@ -10,15 +10,23 @@
     "fmt": "prettier --write ./src",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write ./src",
+    "lint:style": "stylelint \"./src/**/*.{css,scss,astro}\" --fix --ignore-path .gitignore",
     "check": "pnpm run fmt && pnpm run lint",
     "check:fix": "pnpm run fmt && pnpm run lint:fix"
   },
   "dependencies": {
-    "astro": "^5.1.2"
+    "astro": "^5.1.2",
+    "the-new-css-reset": "^1.11.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "prettier": "^3.4.2",
-    "prettier-plugin-astro": "^0.14.1"
-  }
+    "prettier-plugin-astro": "^0.14.1",
+    "sass": "^1.83.0"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": "9.15.2"
+  },
+  "packageManager": "pnpm@9.15.2"
 }
