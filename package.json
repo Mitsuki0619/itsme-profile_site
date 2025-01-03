@@ -7,6 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "deploy": "astro build && wrangler pages deploy",
+    "cf-typegen": "wrangler types",
     "fmt": "prettier --write ./src",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write ./src",
@@ -16,13 +18,16 @@
   },
   "dependencies": {
     "astro": "^5.1.2",
+    "@astrojs/cloudflare": "^12.1.0",
     "the-new-css-reset": "^1.11.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.1",
-    "sass": "^1.83.0"
+    "sass": "^1.83.0",
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "wrangler": "^3.99.0"
   },
   "engines": {
     "node": ">=22",
