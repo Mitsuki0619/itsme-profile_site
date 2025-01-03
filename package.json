@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
     "astro": "astro",
     "deploy": "astro build && wrangler pages deploy",
+    "preview": "astro build && wrangler pages dev",
     "cf-typegen": "wrangler types",
     "fmt": "prettier --write ./src",
     "lint": "biome lint .",
