@@ -1,11 +1,75 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import PortfolioListItem from "../components/PortfolioListItem.astro";
+import SectionTitle from "../components/SectionTitle.astro";
+import Layout from "../layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const portfolios = [
+  {
+    title: "Portfolio 1",
+    description: "This is my first portfolio",
+    imageSrc: "https://via.placeholder.com/150",
+    link: "#",
+  },
+  {
+    title: "Portfolio 2",
+    description: "This is my second portfolio",
+    imageSrc: "https://via.placeholder.com/150",
+    link: "#",
+  },
+  {
+    title: "Portfolio 3",
+    description: "This is my third portfolio",
+    imageSrc: "https://via.placeholder.com/150",
+    link: "#",
+  },
+];
+const articles = [
+  {
+    title: "Article 1",
+    description: "This is my first article",
+    link: "#",
+  },
+  {
+    title: "Article 2",
+    description: "This is my second article",
+    link: "#",
+  },
+  {
+    title: "Article 3",
+    description: "This is my third article",
+    link: "#",
+  },
+];
 ---
 
 <Layout>
-	<Welcome />
+  <section>MV</section>
+  <section>
+    <SectionTitle title="About Me" />
+    <div>
+      <div>
+        <img src="" alt="profile picture" />
+      </div>
+    </div>
+  </section>
+  <section>
+    <SectionTitle title="Portfolios" />
+    <ul>
+      {
+        portfolios.map((portfolio) => (
+          <li>
+            <PortfolioListItem
+              title={portfolio.title}
+              description={portfolio.description}
+              imageSrc={portfolio.imageSrc}
+              link={portfolio.link}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+  <section>
+    <SectionTitle title="Articles" />
+  </section>
 </Layout>

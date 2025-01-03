@@ -1,0 +1,33 @@
+---
+type Props = {
+  title: string;
+  description: string;
+  link: string;
+};
+const { title, description, link } = Astro.props;
+---
+
+<a href={link} class="article-card">
+  <h3>{title}</h3>
+  <p>{description}</p>
+</a>
+<style>
+  .article-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .article-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .article-card p {
+    margin-bottom: 0;
+  } 
+</style>

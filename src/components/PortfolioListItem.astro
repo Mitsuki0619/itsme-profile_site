@@ -1,0 +1,42 @@
+---
+type Props = {
+  title: string;
+  description: string;
+  imageSrc: string;
+  link: string;
+};
+
+const { title, description, imageSrc, link } = Astro.props;
+---
+
+<a href={link} class="portfolio-card">
+  <img src={imageSrc} alt={title} />
+  <h3>{title}</h3>
+  <p>{description}</p>
+</a>
+
+<style>
+  .portfolio-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .portfolio-card img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .portfolio-card h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-card p {
+    margin-bottom: 0;
+  }
+</style>
