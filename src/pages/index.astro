@@ -1,7 +1,10 @@
 ---
-import PortfolioListItem from "../components/PortfolioListItem.astro";
-import SectionTitle from "../components/SectionTitle.astro";
 import Layout from "../layouts/Layout.astro";
+import MainVisualSection from "../sections/mv/components/MainVisualSection.astro";
+import DesignVisualSection from "../sections/design-visual/components/DesignVisualSection.astro";
+import AboutMeSection from "../sections/about-me/components/AboutMeSection.astro";
+import PortfoliosSection from "../sections/portfolios/components/PortfoliosSection.astro";
+import ArticlesSection from "../sections/articles/components/ArticlesSection.astro";
 
 const portfolios = [
   {
@@ -43,33 +46,9 @@ const articles = [
 ---
 
 <Layout>
-  <section>MV</section>
-  <section>
-    <SectionTitle title="About Me" />
-    <div>
-      <div>
-        <img src="" alt="profile picture" />
-      </div>
-    </div>
-  </section>
-  <section>
-    <SectionTitle title="Portfolios" />
-    <ul>
-      {
-        portfolios.map((portfolio) => (
-          <li>
-            <PortfolioListItem
-              title={portfolio.title}
-              description={portfolio.description}
-              imageSrc={portfolio.imageSrc}
-              link={portfolio.link}
-            />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-  <section>
-    <SectionTitle title="Articles" />
-  </section>
+  <MainVisualSection />
+  <DesignVisualSection />
+  <AboutMeSection />
+  <PortfoliosSection />
+  <ArticlesSection />
 </Layout>
