@@ -11,8 +11,8 @@ import {
 } from "@react-three/drei";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import gsap from "gsap";
-import { Lines } from "./Lines.jsx";
-import { Particles } from "./Particles.jsx";
+import { Lines } from "../Lines/Lines";
+import { Particles } from "../Particles/Particles";
 import * as THREE from "three";
 
 extend({ UnrealBloomPass });
@@ -203,7 +203,7 @@ function AnimatedText() {
   );
 }
 
-export default function AnimatedMV() {
+export default function GalaxyMV() {
   const containerRef = useRef();
 
   useEffect(() => {

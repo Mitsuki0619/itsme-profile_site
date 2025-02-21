@@ -5,43 +5,23 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "astro": "astro",
-    "deploy": "astro build && wrangler pages deploy",
-    "preview": "astro build && wrangler pages dev",
-    "cf-typegen": "wrangler types",
-    "fmt": "prettier --write ./src",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write ./src",
-    "lint:style": "stylelint \"./src/**/*.{css,scss,astro}\" --fix --ignore-path .gitignore",
-    "check": "pnpm run fmt && pnpm run lint",
-    "check:fix": "pnpm run fmt && pnpm run lint:fix"
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.1.0",
     "@astrojs/react": "^4.2.0",
     "@react-three/drei": "^9.121.4",
     "@react-three/fiber": "^8.17.14",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "astro": "^5.1.2",
+    "astro": "^5.2.5",
     "gsap": "^3.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "the-new-css-reset": "^1.11.3",
-    "three": "^0.172.0"
+    "three": "^0.173.0"
   },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0",
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@cloudflare/workers-types": "^4.20241230.0",
-    "@types/three": "^0.172.0",
-    "prettier": "^3.4.2",
-    "prettier-plugin-astro": "^0.14.1",
-    "sass": "^1.83.0",
-    "wrangler": "^3.99.0"
-  },
-  "engines": {
-    "node": ">=22",
-    "pnpm": "9.15.2"
-  },
-  "packageManager": "pnpm@9.15.2"
+    "@types/three": "^0.173.0"
+  }
 }

@@ -1,0 +1,210 @@
+---
+---
+
+<div class="flex min-h-screen flex-col items-center justify-between p-24">
+  <canvas id="explodingCanvas" class="fixed inset-0 w-full h-full"></canvas>
+</div>
+
+<script>
+  import { gsap } from 'gsap';
+
+  let cH: number;
+  let cW: number;
+  let bgColor = "#FF6138";
+  const animations: gsap.core.Tween[] = [];
+  const circles: Circle[] = [];
+
+  const colorPicker = (() => {
+    const colors = ["#FF6138", "#FFBE53", "#2980B9", "#282741"];
+    let index = 0;
+    return {
+      next: () => {
+        index = index++ < colors.length - 1 ? index : 0;
+        return colors[index];
+      },
+      current: () => colors[index],
+    };
+  })();
+
+  class Circle {
+    x: number = 0;
+    y: number = 0;
+    r: number = 0;
+    fill?: string;
+    stroke?: { width: number; color: string };
+    opacity?: number;
+
+    constructor(opts: Partial<Circle>) {
+      Object.assign(this, opts);
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+      ctx.globalAlpha = this.opacity || 1;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
+      if (this.stroke) {
+        ctx.strokeStyle = this.stroke.color;
+        ctx.lineWidth = this.stroke.width;
+        ctx.stroke();
+      }
+      if (this.fill) {
+        ctx.fillStyle = this.fill;
+        ctx.fill();
+      }
+      ctx.closePath();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  const removeAnimation = (animation: gsap.core.Tween) => {
+    const index = animations.indexOf(animation);
+    if (index > -1) animations.splice(index, 1);
+  };
+
+  const removeCircle = (circle: Circle) => {
+    const index = circles.indexOf(circle);
+    if (index > -1) circles.splice(index, 1);
+  };
+
+  const calcPageFillRadius = (x: number, y: number) => {
+    const l = Math.max(x - 0, cW - x);
+    const h = Math.max(y - 0, cH - y);
+    return Math.sqrt(Math.pow(l, 2) + Math.pow(h, 2));
+  };
+
+  const handleEvent = (e: MouseEvent | TouchEvent, canvas: HTMLCanvasElement) => {
+    if ("touches" in e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      e = new MouseEvent('touchstart', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        detail: touch.identifier,
+        screenX: touch.screenX,
+        screenY: touch.screenY,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        ctrlKey: false,
+        altKey: false,
+        shiftKey: false,
+        metaKey: false,
+        button: 0,
+        buttons: 1,
+        relatedTarget: null
+      });
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const currentColor = colorPicker.current();
+    const nextColor = colorPicker.next();
+    const targetR = calcPageFillRadius(x, y);
+    const rippleSize = Math.min(200, cW * 0.4);
+    const minCoverDuration = 0.75;
+
+    const pageFill = new Circle({
+      x: x,
+      y: y,
+      r: 0,
+      fill: nextColor,
+    });
+    circles.push(pageFill);
+
+    const fillAnimation = gsap.to(pageFill, {
+      r: targetR,
+      duration: Math.max(targetR / 2000, minCoverDuration),
+      ease: "power4.out",
+      onComplete: () => {
+        bgColor = pageFill.fill || "";
+        removeAnimation(fillAnimation);
+        removeCircle(pageFill);
+      },
+    });
+
+    const ripple = new Circle({
+      x: x,
+      y: y,
+      r: 0,
+      fill: currentColor,
+      stroke: {
+        width: 3,
+        color: currentColor,
+      },
+      opacity: 1,
+    });
+    circles.push(ripple);
+
+    const rippleAnimation = gsap.to(ripple, {
+      r: rippleSize,
+      opacity: 0,
+      duration: 0.9,
+      ease: "expo.out",
+      onComplete: () => {
+        removeAnimation(rippleAnimation);
+        removeCircle(ripple);
+      },
+    });
+
+    for (let i = 0; i < 32; i++) {
+      const particle = new Circle({
+        x: x,
+        y: y,
+        fill: currentColor,
+        r: gsap.utils.random(24, 48),
+        opacity: 1,
+      });
+      circles.push(particle);
+
+      const particleAnimation = gsap.to(particle, {
+        x: particle.x + gsap.utils.random(-rippleSize, rippleSize),
+        y:
+          particle.y +
+          gsap.utils.random(-rippleSize * 1.15, rippleSize * 1.15),
+        r: 0,
+        opacity: 0,
+        duration: gsap.utils.random(1, 1.3),
+        ease: "expo.out",
+        onComplete: () => {
+          removeAnimation(particleAnimation);
+          removeCircle(particle);
+        },
+      });
+      animations.push(particleAnimation);
+    }
+
+    animations.push(fillAnimation, rippleAnimation);
+  };
+
+  const animate = (ctx: CanvasRenderingContext2D) => {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, cW, cH);
+    circles.forEach((circle) => circle.draw(ctx));
+    requestAnimationFrame(() => animate(ctx));
+  };
+
+  const resizeCanvas = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+    cW = window.innerWidth;
+    cH = window.innerHeight;
+    canvas.width = cW * devicePixelRatio;
+    canvas.height = cH * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+
+    if (ctx) {
+      resizeCanvas(canvas, ctx);
+      window.addEventListener("resize", () => resizeCanvas(canvas, ctx));
+      canvas.addEventListener("mousedown", (e) => handleEvent(e, canvas));
+      canvas.addEventListener("touchstart", (e) => handleEvent(e, canvas));
+
+      animate(ctx);
+    }
+  });
+</script>
+
