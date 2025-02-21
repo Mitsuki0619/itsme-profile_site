@@ -1,54 +1,12 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import MainVisualSection from "../sections/mv/components/MainVisualSection.astro";
-import DesignVisualSection from "../sections/design-visual/components/DesignVisualSection.astro";
-import AboutMeSection from "../sections/about-me/components/AboutMeSection.astro";
-import PortfoliosSection from "../sections/portfolios/components/PortfoliosSection.astro";
-import ArticlesSection from "../sections/articles/components/ArticlesSection.astro";
-
-const portfolios = [
-  {
-    title: "Portfolio 1",
-    description: "This is my first portfolio",
-    imageSrc: "https://via.placeholder.com/150",
-    link: "#",
-  },
-  {
-    title: "Portfolio 2",
-    description: "This is my second portfolio",
-    imageSrc: "https://via.placeholder.com/150",
-    link: "#",
-  },
-  {
-    title: "Portfolio 3",
-    description: "This is my third portfolio",
-    imageSrc: "https://via.placeholder.com/150",
-    link: "#",
-  },
-];
-const articles = [
-  {
-    title: "Article 1",
-    description: "This is my first article",
-    link: "#",
-  },
-  {
-    title: "Article 2",
-    description: "This is my second article",
-    link: "#",
-  },
-  {
-    title: "Article 3",
-    description: "This is my third article",
-    link: "#",
-  },
-];
+import Layout from '../layouts/Layout.astro';
+import GalaxyMV from '../sections/mv/components/GalaxyMV/GalaxyMV';
+import ColoredBgSection from '../sections/coloredBgSection/components/ColoredBgSection/ColoredBgSection.astro';
 ---
 
-<Layout>
-  <MainVisualSection />
-  <DesignVisualSection />
-  <AboutMeSection />
-  <PortfoliosSection />
-  <ArticlesSection />
+<Layout title="Animated MV">
+  <main>
+    <GalaxyMV client:load />
+    <ColoredBgSection client:load/>
+  </main>
 </Layout>

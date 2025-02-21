@@ -4,6 +4,16 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 
+interface ParticleData {
+  position: THREE.Vector3;
+  velocity: THREE.Vector3;
+  scale: number;
+  life: number;
+  maxLife: number;
+  color: THREE.Color;
+  isLarge?: boolean;
+}
+
 export function Particles({ count = 200 }) {
   const meshRef = useRef();
   const { viewport } = useThree();
@@ -33,7 +43,7 @@ export function Particles({ count = 200 }) {
       color: new THREE.Color(
         0.6 + Math.random() * 0.4,
         0.8 + Math.random() * 0.2,
-        1,
+        1
       ),
       isLarge,
     };
@@ -43,7 +53,6 @@ export function Particles({ count = 200 }) {
     return Array(count)
       .fill(0)
       .map(() => createParticle());
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   }, [count, createParticle]); // Added createParticle to dependencies
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -84,7 +93,7 @@ export function Particles({ count = 200 }) {
     meshRef.current.instanceMatrix.needsUpdate = true;
     meshRef.current.geometry.setAttribute(
       "color",
-      new THREE.InstancedBufferAttribute(colorArray, 3),
+      new THREE.InstancedBufferAttribute(colorArray, 3)
     );
   });
 
