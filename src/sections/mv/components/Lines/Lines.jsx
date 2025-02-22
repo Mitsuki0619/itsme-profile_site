@@ -1,24 +1,12 @@
-"use client";
-
 import { useRef, useMemo, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-
-interface LineData {
-  position: THREE.Vector3;
-  direction: THREE.Vector3;
-  length: number;
-  speed: number;
-  life: number;
-  maxLife: number;
-  color: THREE.Color;
-}
 
 export function Lines({ count = 80 }) {
   const meshRef = useRef();
   const { viewport } = useThree();
 
-  const createNewLine = useCallback((): LineData => {
+  const createNewLine = useCallback(() => {
     const phi = Math.random() * Math.PI * 2;
     const theta = Math.random() * Math.PI;
     const length = Math.random() * 15 + 20;

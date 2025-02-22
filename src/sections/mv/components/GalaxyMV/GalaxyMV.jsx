@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import { Canvas, extend, useThree, useFrame } from "@react-three/fiber";
 import {
@@ -11,8 +9,8 @@ import {
 } from "@react-three/drei";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import gsap from "gsap";
-import { Lines } from "../Lines/Lines";
-import { Particles } from "../Particles/Particles";
+import { Lines } from "../Lines/Lines.jsx";
+import { Particles } from "../Particles/Particles.jsx";
 import * as THREE from "three";
 
 extend({ UnrealBloomPass });

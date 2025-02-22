@@ -1,5 +1,3 @@
-"use client";
-
 import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
@@ -43,7 +41,8 @@ export function Particles({ count = 200 }) {
     return Array(count)
       .fill(0)
       .map(() => createParticle());
-  }, [count, createParticle]); // Added createParticle to dependencies
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  }, [count, createParticle]);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorArray = useMemo(() => new Float32Array(count * 3), [count]);
