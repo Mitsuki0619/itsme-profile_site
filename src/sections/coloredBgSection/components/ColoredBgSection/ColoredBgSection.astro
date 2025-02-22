@@ -1,8 +1,8 @@
 ---
 ---
 
-<div class="flex min-h-screen flex-col items-center justify-between p-24">
-  <canvas id="explodingCanvas" class="fixed inset-0 w-full h-full"></canvas>
+<div class="fixed inset-x-0 top-0 h-[500px] overflow-x-hidden">
+  <canvas id="explodingCanvas" class="w-full h-full"></canvas>
 </div>
 
 <script>
@@ -72,7 +72,7 @@
     return Math.sqrt(Math.pow(l, 2) + Math.pow(h, 2));
   };
 
-  const handleEvent = (e: MouseEvent | TouchEvent, canvas: HTMLCanvasElement) => {
+  const handleEvent = (e: MouseEvent | TouchEvent) => {
     if ("touches" in e) {
       e.preventDefault();
       const touch = e.touches[0];
@@ -95,6 +95,7 @@
       });
     }
 
+    const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -186,25 +187,50 @@
   };
 
   const resizeCanvas = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-    cW = window.innerWidth;
-    cH = window.innerHeight;
+    const rect = canvas.getBoundingClientRect();
+    cW = rect.width;
+    cH = rect.height;
     canvas.width = cW * devicePixelRatio;
     canvas.height = cH * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  const initCanvas = () => {
     const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
     if (ctx) {
       resizeCanvas(canvas, ctx);
       window.addEventListener("resize", () => resizeCanvas(canvas, ctx));
-      canvas.addEventListener("mousedown", (e) => handleEvent(e, canvas));
-      canvas.addEventListener("touchstart", (e) => handleEvent(e, canvas));
+      canvas.addEventListener("mousedown", handleEvent);
+      canvas.addEventListener("touchstart", handleEvent);
 
       animate(ctx);
     }
-  });
+  };
+
+  // 即時実行関数を使用して初期化を行う
+  (() => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCanvas);
+    } else {
+      initCanvas();
+    }
+  })();
 </script>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* キャンバスの初期サイズを設定 */
+  #explodingCanvas {
+    width: 100% !important;
+    height: 500px !important;
+    display: block;
+  }
+</style>
 
