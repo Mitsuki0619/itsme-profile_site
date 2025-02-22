@@ -4,16 +4,6 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 
-interface ParticleData {
-  position: THREE.Vector3;
-  velocity: THREE.Vector3;
-  scale: number;
-  life: number;
-  maxLife: number;
-  color: THREE.Color;
-  isLarge?: boolean;
-}
-
 export function Particles({ count = 200 }) {
   const meshRef = useRef();
   const { viewport } = useThree();
@@ -104,7 +94,7 @@ export function Particles({ count = 200 }) {
         color="#a0f0ff"
         vertexColors
         transparent
-        opacity={0.6} // Reduced from 0.8
+        opacity={0.6}
         blending={THREE.AdditiveBlending}
       />
     </instancedMesh>

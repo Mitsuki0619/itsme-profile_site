@@ -99,7 +99,7 @@ export function Lines({ count = 80 }) {
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <cylinderGeometry args={[1, 1, 1, 8]} />
       <meshBasicMaterial
-        color="#a0f0ff"
+        color="#fff"
         vertexColors
         transparent
         opacity={0.5}

@@ -152,7 +152,7 @@ function Bloom() {
   const bloomPass = useRef();
 
   useEffect(() => {
-    bloomPass.current.strength = 2.0;
+    bloomPass.current.strength = 0.5;
     bloomPass.current.radius = 0.8;
     bloomPass.current.threshold = 0.1;
   }, []);
@@ -167,10 +167,10 @@ function Bloom() {
 function AnimatedText() {
   const textRef = useRef();
 
+  // 文字の輝き
   useFrame(({ clock }) => {
     if (textRef.current) {
       textRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.5) * 0.1;
-      // Add pulsating effect
       const pulsate = Math.sin(clock.elapsedTime * 2) * 0.5 + 0.5;
       textRef.current.material.emissiveIntensity = 0.5 + pulsate * 0.5;
     }
@@ -180,7 +180,7 @@ function AnimatedText() {
     <Center>
       <Text3D
         ref={textRef}
-        font="/fonts/inter_bold.json"
+        font="/fonts/Work Sans_Regular.json"
         size={1}
         height={0.3}
         bevelEnabled
@@ -189,10 +189,10 @@ function AnimatedText() {
         bevelOffset={0}
         bevelSegments={5}
       >
-        Hello, World!
+        mitsuki iwamura
         <meshStandardMaterial
           color="#fff"
-          emissive="#a0f0ff"
+          emissive="#fff"
           emissiveIntensity={0.5}
           metalness={0.2}
           roughness={0.3}
@@ -221,13 +221,13 @@ export default function GalaxyMV() {
       ref={containerRef}
       style={{ width: "100%", height: "100vh", backgroundColor: "black" }}
     >
-      <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
+      <Canvas camera={{ position: [0, 0, 12], fov: 50 }}>
         <Background />
         <OrbitControls enableZoom={false} enablePan={true} />
         <Environment preset="night" />
         <AnimatedText />
-        <Lines count={40} />
-        <Particles count={400} />
+        <Lines count={30} />
+        <Particles count={200} />
         <Bloom />
         <ambientLight intensity={0.3} />
         <pointLight position={[10, 10, 10]} intensity={1.0} />
