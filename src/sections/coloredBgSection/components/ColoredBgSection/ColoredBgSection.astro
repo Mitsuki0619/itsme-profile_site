@@ -1,21 +1,23 @@
 ---
 ---
 
-<div class="fixed inset-x-0 top-0 h-[500px] overflow-x-hidden">
-  <canvas id="explodingCanvas" class="w-full h-full"></canvas>
+<div class="fixed inset-x-0 top-0 h-[500px] overflow-hidden">
+  <canvas id="explodingCanvas" class="w-full h-[500px]"></canvas>
 </div>
 
 <script>
   import { gsap } from 'gsap';
 
-  let cH: number;
+  let cH: number = 500;
   let cW: number;
-  let bgColor = "#FF6138";
+  let bgColor = "#8A2BE2"; // 紫色で開始
   const animations: gsap.core.Tween[] = [];
   const circles: Circle[] = [];
+  let currentText = "";
+  let glitchOffsets = { r: { x: 0, y: 0 }, g: { x: 0, y: 0 }, b: { x: 0, y: 0 } };
 
   const colorPicker = (() => {
-    const colors = ["#FF6138", "#FFBE53", "#2980B9", "#282741"];
+    const colors = ["#8A2BE2", "#FFB6C1", "#000033", "#FF4500", "#1E90FF"];
     let index = 0;
     return {
       next: () => {
@@ -23,6 +25,25 @@
         return colors[index];
       },
       current: () => colors[index],
+    };
+  })();
+
+  const textPicker = (() => {
+    const texts = [
+      "Life moves fast.\nReact wisely.",
+      "Energy flows\nwhere you React.",
+      "Broaden your Vue,\nexpand your possibilities.",
+      "Every Type\ntells a story.",
+      "Strength comes\nfrom the right Type.",
+      "Don't wait.\nTake the Next move.",
+      "Dream big.\nGo further.",
+      "Light transforms\nthrough a Prisma,\nso do you.",
+    ];
+    return {
+      next: () => {
+        return texts[Math.floor(Math.random() * texts.length)];
+      },
+      current: () => texts[Math.floor(Math.random() * texts.length)],
     };
   })();
 
@@ -72,34 +93,69 @@
     return Math.sqrt(Math.pow(l, 2) + Math.pow(h, 2));
   };
 
-  const handleEvent = (e: MouseEvent | TouchEvent) => {
-    if ("touches" in e) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      e = new MouseEvent('touchstart', {
-        bubbles: true,
-        cancelable: true,
-        view: window,
-        detail: touch.identifier,
-        screenX: touch.screenX,
-        screenY: touch.screenY,
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-        ctrlKey: false,
-        altKey: false,
-        shiftKey: false,
-        metaKey: false,
-        button: 0,
-        buttons: 1,
-        relatedTarget: null
-      });
-    }
+  const glitchText = (ctx: CanvasRenderingContext2D, newText: string) => {
+    const glitchDuration = 150;
+    const steps = 6;
+    let currentStep = 0;
 
-    const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const glitchInterval = setInterval(() => {
+      if (currentStep === steps) {
+        currentText = newText;
+        glitchOffsets = { r: { x: 0, y: 0 }, g: { x: 0, y: 0 }, b: { x: 0, y: 0 } };
+        clearInterval(glitchInterval);
+      } else {
+        currentText = newText;
+        glitchOffsets = {
+          r: { x: Math.random() * 20 - 10, y: Math.random() * 20 - 10 },
+          g: { x: Math.random() * 20 - 10, y: Math.random() * 20 - 10 },
+          b: { x: Math.random() * 20 - 10, y: Math.random() * 20 - 10 }
+        };
+      }
+      currentStep++;
+    }, glitchDuration / steps);
+  };
 
+  const drawText = (ctx: CanvasRenderingContext2D, text: string) => {
+  ctx.save();
+  const lines = text.split('\n');
+  let fontSize = 120; // デフォルトのフォントサイズを120pxに設定
+  let lineHeight = 130; // 行間を広げる
+
+  // 長いテキストの場合、フォントサイズを調整
+  if (lines.some(line => line.length > 15) || lines.length > 2) {
+    fontSize = 100;
+    lineHeight = 110;
+  }
+
+  ctx.font = `bold ${fontSize}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  const totalHeight = lineHeight * (lines.length - 1);
+  const startY = cH / 2 - totalHeight / 2 - 20;
+
+  lines.forEach((line, index) => {
+    const y = startY + index * lineHeight;
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(line, cW / 2, y);
+    
+    ctx.globalCompositeOperation = 'screen';
+    
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.r.x, y + glitchOffsets.r.y);
+    
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.g.x, y + glitchOffsets.g.y);
+    
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.b.x, y + glitchOffsets.b.y);
+  });
+  
+  ctx.restore();
+};
+
+  const triggerAnimation = (x: number, y: number) => {
     const currentColor = colorPicker.current();
     const nextColor = colorPicker.next();
     const targetR = calcPageFillRadius(x, y);
@@ -177,19 +233,65 @@
     }
 
     animations.push(fillAnimation, rippleAnimation);
+
+    const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const newText = textPicker.next();
+      glitchText(ctx, newText);
+    }
+  };
+
+  const handleEvent = (e: MouseEvent | TouchEvent) => {
+    if ("touches" in e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      e = new MouseEvent('touchstart', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        detail: touch.identifier,
+        screenX: touch.screenX,
+        screenY: touch.screenY,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        ctrlKey: false,
+        altKey: false,
+        shiftKey: false,
+        metaKey: false,
+        button: 0,
+        buttons: 1,
+        relatedTarget: null
+      });
+    }
+
+    const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    triggerAnimation(x, y);
+  };
+
+  const autoTriggerAnimation = () => {
+    const x = Math.random() * cW;
+    const y = Math.random() * cH;
+    triggerAnimation(x, y);
+
+    const nextDelay = Math.random() * 2500 + 500;
+    setTimeout(autoTriggerAnimation, nextDelay);
   };
 
   const animate = (ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, cW, cH);
     circles.forEach((circle) => circle.draw(ctx));
+    drawText(ctx, currentText);
     requestAnimationFrame(() => animate(ctx));
   };
 
   const resizeCanvas = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-    const rect = canvas.getBoundingClientRect();
-    cW = rect.width;
-    cH = rect.height;
+    cW = canvas.clientWidth;
     canvas.width = cW * devicePixelRatio;
     canvas.height = cH * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
@@ -205,11 +307,13 @@
       canvas.addEventListener("mousedown", handleEvent);
       canvas.addEventListener("touchstart", handleEvent);
 
+      currentText = textPicker.current();
       animate(ctx);
+
+      autoTriggerAnimation();
     }
   };
 
-  // 即時実行関数を使用して初期化を行う
   (() => {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initCanvas);
@@ -220,13 +324,6 @@
 </script>
 
 <style>
-  body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
-
-  /* キャンバスの初期サイズを設定 */
   #explodingCanvas {
     width: 100% !important;
     height: 500px !important;
