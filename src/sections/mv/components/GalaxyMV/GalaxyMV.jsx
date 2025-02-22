@@ -12,6 +12,7 @@ import gsap from "gsap";
 import { Lines } from "../Lines/Lines.jsx";
 import { Particles } from "../Particles/Particles.jsx";
 import * as THREE from "three";
+import ScrollDownButton from "../ScrollDownButton/ScrollDownButton.js";
 
 extend({ UnrealBloomPass });
 
@@ -237,6 +238,7 @@ export default function GalaxyMV() {
           castShadow
         />
       </Canvas>
+      <ScrollDownButton />
     </div>
   );
 }
