@@ -1,6 +1,9 @@
-import { useRef, useMemo, useCallback } from "react";
+"use client";
+
+import { useRef, useMemo, useCallback, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import gsap from "gsap";
 
 export function Lines({ count = 80 }) {
   const meshRef = useRef();
@@ -31,6 +34,8 @@ export function Lines({ count = 80 }) {
         0.7 + Math.random() * 0.3,
         1
       ),
+      scale: 0,
+      opacity: 0,
     };
   }, []);
 
@@ -42,6 +47,18 @@ export function Lines({ count = 80 }) {
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorArray = useMemo(() => new Float32Array(count * 3), [count]);
+
+  useEffect(() => {
+    linesData.forEach((line, i) => {
+      gsap.to(line, {
+        scale: 1,
+        opacity: 0.7,
+        duration: 1,
+        delay: i * 0.01,
+        ease: "power2.out",
+      });
+    });
+  }, [linesData]);
 
   useFrame((state, delta) => {
     if (!meshRef.current) return;
@@ -59,10 +76,17 @@ export function Lines({ count = 80 }) {
       if (line.life <= 0 || line.position.length() > maxDistance) {
         const newLine = createNewLine();
         Object.assign(line, newLine);
+        gsap.to(line, {
+          scale: 1,
+          opacity: 0.7,
+          duration: 2,
+          ease: "power2.out",
+        });
       }
 
       const currentLength = line.position.length();
-      const scale = 0.05 * (0.3 + 0.3 * (line.life / line.maxLife));
+      const scale =
+        0.05 * line.scale * (0.3 + 0.7 * (line.life / line.maxLife));
       dummy.position.copy(line.position.clone().multiplyScalar(0.5));
       dummy.scale.set(scale, currentLength / 2, scale);
       dummy.quaternion.setFromUnitVectors(
@@ -90,7 +114,7 @@ export function Lines({ count = 80 }) {
         color="#fff"
         vertexColors
         transparent
-        opacity={0.5}
+        opacity={0.7}
         blending={THREE.AdditiveBlending}
       />
     </instancedMesh>

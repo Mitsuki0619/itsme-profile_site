@@ -1,14 +1,47 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../components/layouts/Layout.astro';
 import GalaxyMV from '../sections/mv/components/GalaxyMV/GalaxyMV';
 import AboutMe from '../sections/about-me/components/AboutMe.astro';
 import ColoredMessages from '../sections/colored-messages/components/ColoredMessages.astro';
+import SpaceBackground from '../components/layouts/SpaceBackground.astro';
+import LoadingScreen from '../components/layouts/LoadingScreen.astro';
 ---
-
 <Layout title="Animated MV">
-  <main>
-    <GalaxyMV client:load />
-    <ColoredMessages/>
-    <AboutMe />
-  </main>
+  <LoadingScreen />
+  <div id="content" class="hidden">
+    <SpaceBackground />
+    <main>
+      <div class="mv-section">
+        <GalaxyMV client:load />
+      </div>
+      <div class="content-section">
+        <ColoredMessages/>
+        <AboutMe />
+      </div>
+    </main>
+  </div>
 </Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  .mv-section {
+    position: relative;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  .content-section {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ColoredMessagesセクションの背景を設定 */
+  .content-section :global(.fixed) {
+    background: rgba(0, 0, 0, 0.9);
+  }
+</style>
+

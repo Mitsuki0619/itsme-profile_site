@@ -1,6 +1,9 @@
+"use client";
+
 import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
+import gsap from "gsap";
 
 export function Particles({ count = 200 }) {
   const meshRef = useRef();
@@ -34,6 +37,7 @@ export function Particles({ count = 200 }) {
         1
       ),
       isLarge,
+      opacity: 0,
     };
   };
 
@@ -41,15 +45,22 @@ export function Particles({ count = 200 }) {
     return Array(count)
       .fill(0)
       .map(() => createParticle());
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  }, [count, createParticle]);
+  }, [count]);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorArray = useMemo(() => new Float32Array(count * 3), [count]);
 
   useEffect(() => {
     timeRef.current = 0;
-  }, []);
+    particlesData.forEach((particle, i) => {
+      gsap.to(particle, {
+        opacity: 0.6,
+        duration: 1,
+        delay: i * 0.01,
+        ease: "power2.out",
+      });
+    });
+  }, [particlesData]);
 
   useFrame((state, delta) => {
     if (!meshRef.current) return;
@@ -66,10 +77,17 @@ export function Particles({ count = 200 }) {
       if (particle.life <= 0 || particle.position.length() > maxDistance) {
         const newParticle = createParticle();
         Object.assign(particle, newParticle);
+        gsap.to(particle, {
+          opacity: 0.6,
+          duration: 1,
+          ease: "power2.out",
+        });
       }
 
       const scale =
-        particle.scale * (0.3 + 1 * (particle.life / particle.maxLife));
+        particle.scale *
+        particle.opacity *
+        (0.3 + 1 * (particle.life / particle.maxLife));
       dummy.position.copy(particle.position);
       dummy.scale.setScalar(scale);
       dummy.updateMatrix();
