@@ -1,5 +1,3 @@
-"use client";
-
 import { useRef, useMemo, useCallback, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -60,7 +58,7 @@ export function Lines({ count = 80 }) {
     });
   }, [linesData]);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (!meshRef.current) return;
 
     const maxDistance = Math.max(viewport.width, viewport.height) * 2;
