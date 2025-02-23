@@ -1,29 +1,25 @@
-import { useEffect, useRef } from "react";
-import { Canvas, extend, useThree, useFrame } from "@react-three/fiber";
-import {
-  Text3D,
-  Environment,
-  OrbitControls,
-  Effects,
-  Center,
-} from "@react-three/drei";
-import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass";
-import gsap from "gsap";
-import { Lines } from "../Lines/Lines.jsx";
-import { Particles } from "../Particles/Particles.jsx";
-import * as THREE from "three";
-import ScrollDownButton from "../ScrollDownButton/ScrollDownButton.js";
+"use client"
 
-extend({ UnrealBloomPass });
+import { useEffect, useRef, useState } from "react"
+import { Canvas, extend, useThree, useFrame } from "@react-three/fiber"
+import { Text3D, Environment, OrbitControls, Effects, Center } from "@react-three/drei"
+import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass"
+import gsap from "gsap"
+import { Lines } from "../Lines/Lines.jsx"
+import { Particles } from "../Particles/Particles.jsx"
+import * as THREE from "three"
+import ScrollDownButton from "../ScrollDownButton/ScrollDownButton.js"
+
+extend({ UnrealBloomPass })
 
 function Background() {
-  const shaderRef = useRef();
+  const shaderRef = useRef()
 
   useFrame(({ clock }) => {
     if (shaderRef.current) {
-      shaderRef.current.uniforms.time.value = clock.elapsedTime;
+      shaderRef.current.uniforms.time.value = clock.elapsedTime
     }
-  });
+  })
 
   return (
     <mesh>
@@ -143,37 +139,37 @@ function Background() {
         `}
       />
     </mesh>
-  );
+  )
 }
 
 function Bloom() {
-  const { size, scene, camera } = useThree();
-  const bloomPass = useRef();
+  const { size, scene, camera } = useThree()
+  const bloomPass = useRef()
 
   useEffect(() => {
-    bloomPass.current.strength = 0.5;
-    bloomPass.current.radius = 0.8;
-    bloomPass.current.threshold = 0.1;
-  }, []);
+    bloomPass.current.strength = 0.5
+    bloomPass.current.radius = 0.8
+    bloomPass.current.threshold = 0.1
+  }, [])
 
   return (
     <Effects disableGamma>
       <unrealBloomPass ref={bloomPass} attachArray="passes" />
     </Effects>
-  );
+  )
 }
 
 function AnimatedText() {
-  const textRef = useRef();
+  const textRef = useRef()
+  const [emissiveIntensity, setEmissiveIntensity] = useState(0.5)
 
-  // 文字の輝き
   useFrame(({ clock }) => {
     if (textRef.current) {
-      textRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.5) * 0.1;
-      const pulsate = Math.sin(clock.elapsedTime * 2) * 0.5 + 0.5;
-      textRef.current.material.emissiveIntensity = 0.5 + pulsate * 0.5;
+      textRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.5) * 0.1
+      const pulsate = Math.sin(clock.elapsedTime * 2) * 0.5 + 0.5
+      setEmissiveIntensity(0.5 + pulsate * 0.5)
     }
-  });
+  })
 
   return (
     <Center>
@@ -192,53 +188,62 @@ function AnimatedText() {
         <meshStandardMaterial
           color="#fff"
           emissive="#fff"
-          emissiveIntensity={0.5}
+          emissiveIntensity={emissiveIntensity}
           metalness={0.2}
           roughness={0.3}
           toneMapped={false}
         />
       </Text3D>
     </Center>
-  );
+  )
 }
 
 export default function GalaxyMV() {
-  const containerRef = useRef();
+  const containerRef = useRef()
+  const [showAnimations, setShowAnimations] = useState(false)
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return
 
     gsap.to(containerRef.current, {
-      backgroundColor: "#000000",
+      backgroundColor: "rgba(0, 0, 0, 0.85)",
       duration: 1,
       ease: "power2.inOut",
-    });
-  }, []);
+    })
+
+    const handleLoadingComplete = () => {
+      setTimeout(() => {
+        setShowAnimations(true)
+      }, 1500) // ローディング完了から1500ms遅延させてアニメーションを開始
+    }
+
+    document.addEventListener("loadingComplete", handleLoadingComplete)
+
+    return () => {
+      document.removeEventListener("loadingComplete", handleLoadingComplete)
+    }
+  }, [])
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100vh", backgroundColor: "black" }}
-    >
-      <Canvas camera={{ position: [0, 0, 12], fov: 50 }}>
+    <div ref={containerRef} style={{ width: "100%", height: "100vh", backgroundColor: "rgba(0, 0, 0, 0.85)" }}>
+      <Canvas camera={{ position: [0, 0, 12], fov: 60 }}>
         <Background />
         <OrbitControls enableZoom={false} enablePan={true} />
         <Environment preset="night" />
         <AnimatedText />
-        <Lines count={30} />
-        <Particles count={200} />
+        {showAnimations && (
+          <>
+            <Lines count={30} />
+            <Particles count={200} />
+          </>
+        )}
         <Bloom />
         <ambientLight intensity={0.3} />
         <pointLight position={[10, 10, 10]} intensity={1.0} />
-        <spotLight
-          position={[-5, 5, 0]}
-          angle={0.5}
-          penumbra={0.5}
-          intensity={1.0}
-          castShadow
-        />
+        <spotLight position={[-5, 5, 0]} angle={0.5} penumbra={0.5} intensity={1.0} castShadow />
       </Canvas>
       <ScrollDownButton />
     </div>
-  );
+  )
 }
+

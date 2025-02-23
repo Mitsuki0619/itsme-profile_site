@@ -1,0 +1,166 @@
+---
+import { ShootingStar } from './ShootingStar/ShootingStar';
+---
+
+<div class="space-background">
+  <div class="stars-container">
+    <!-- 星はJavaScriptで動的に生成されます -->
+  </div>
+  <div class="nebula-container">
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
+  </div>
+  <div class="shooting-stars-container">
+    <ShootingStar client:load />
+  </div>
+</div>
+
+<style>
+  .space-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200vh;
+    z-index: 0;
+    background: linear-gradient(135deg, #0f0828 0%, #0c1526 100%);
+    overflow: hidden;
+  }
+
+  .stars-container,
+  .nebula-container,
+  .shooting-stars-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .nebula {
+    position: absolute;
+    filter: blur(60px);
+    opacity: 0.5;
+    mix-blend-mode: screen;
+  }
+
+  .nebula-1 {
+    top: 10%;
+    left: 20%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle at center, rgba(63, 0, 119, 0.4), transparent 70%);
+    animation: nebulaFloat 20s infinite alternate;
+  }
+
+  .nebula-2 {
+    top: 60%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(circle at center, rgba(0, 24, 82, 0.4), transparent 70%);
+    animation: nebulaFloat 15s infinite alternate-reverse;
+  }
+
+  .nebula-3 {
+    top: 30%;
+    left: 70%;
+    width: 35%;
+    height: 35%;
+    background: radial-gradient(circle at center, rgba(82, 0, 124, 0.4), transparent 70%);
+    animation: nebulaFloat 18s infinite alternate;
+  }
+
+  @keyframes nebulaFloat {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(20px, 20px);
+    }
+  }
+
+  .star {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .shooting-stars-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  function initStars() {
+    const container = document.querySelector('.stars-container');
+    if (!container) return;
+
+    for (let i = 0; i < 400; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 200}%`;
+      
+      gsap.fromTo(star,
+        { opacity: 0 },
+        {
+          opacity: Math.random() * 0.5 + 0.3,
+          duration: Math.random() * 3 + 2,
+          repeat: -1,
+          yoyo: true,
+          ease: 'power1.inOut',
+          delay: Math.random() * 4,
+          onUpdate: () => updateStarGlow(star)
+        }
+      );
+
+      container.appendChild(star);
+    }
+  }
+
+  function updateStarGlow(star) {
+    const opacity = parseFloat(star.style.opacity);
+    const size = parseFloat(star.style.width);
+    const glowSize = size * (1 + opacity * 15);
+    const glowOpacity = opacity * 0.5;
+    star.style.boxShadow = `0 0 ${glowSize}px ${glowSize / 2}px rgba(255, 255, 255, ${glowOpacity})`;
+  }
+
+  function initParallax() {
+    const background = document.querySelector('.space-background');
+    const starsContainer = document.querySelector('.stars-container');
+    const nebulaContainer = document.querySelector('.nebula-container');
+    const shootingStarsContainer = document.querySelector('.shooting-stars-container');
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const speed = 0.5;
+
+      background.style.transform = `translateY(${-scrollY * speed * 0.1}px)`;
+      starsContainer.style.transform = `translateY(${-scrollY * speed * 0.2}px)`;
+      nebulaContainer.style.transform = `translateY(${-scrollY * speed * 0.3}px)`;
+      shootingStarsContainer.style.transform = `translateY(${-scrollY * speed * 0.4}px)`;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded');
+    initStars();
+    initParallax();
+    console.log('Background initialized');
+  });
+</script>
+
