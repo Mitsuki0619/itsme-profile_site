@@ -1,11 +1,13 @@
 ---
-import Layout from '../components/layouts/Layout.astro';
-import GalaxyMV from '../sections/mv/components/GalaxyMV/GalaxyMV';
-import AboutMe from '../sections/about-me/components/AboutMe.astro';
-import ColoredMessages from '../sections/colored-messages/components/ColoredMessages.astro';
-import SpaceBackground from '../components/layouts/SpaceBackground.astro';
-import LoadingScreen from '../components/layouts/LoadingScreen.astro';
+import Layout from "../components/layouts/Layout.astro";
+import LoadingScreen from "../components/layouts/LoadingScreen.astro";
+import SpaceBackground from "../components/layouts/SpaceBackground.astro";
+import AboutMe from "../sections/about-me/components/AboutMe.astro";
+import BgImage from "../sections/bg-image/components/BgImage.astro";
+import ColoredMessages from "../sections/colored-messages/components/ColoredMessages.astro";
+import GalaxyMV from "../sections/mv/components/GalaxyMV/GalaxyMV";
 ---
+
 <Layout title="Animated MV">
   <LoadingScreen />
   <div id="content" class="hidden">
@@ -17,6 +19,7 @@ import LoadingScreen from '../components/layouts/LoadingScreen.astro';
       <div class="content-section">
         <ColoredMessages/>
         <AboutMe />
+        <BgImage />
       </div>
     </main>
   </div>
