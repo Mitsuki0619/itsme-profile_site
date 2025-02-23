@@ -1,46 +1,46 @@
 .scrollDownButton {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  animation: bounce 2s infinite;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	position: absolute;
+	bottom: 2rem;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: rgba(255, 255, 255, 0.2);
+	border: none;
+	border-radius: 50%;
+	width: 3rem;
+	height: 3rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	animation: bounce 2s infinite;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .scrollDownButton:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 0.3);
 }
 
 .arrow {
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  display: inline-block;
-  padding: 6px;
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
+	border: solid white;
+	border-width: 0 2px 2px 0;
+	display: inline-block;
+	padding: 6px;
+	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
 }
 
 @keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0) translateX(-50%);
-  }
-  40% {
-    transform: translateY(-10px) translateX(-50%);
-  }
-  60% {
-    transform: translateY(-5px) translateX(-50%);
-  }
+	0%,
+	20%,
+	50%,
+	80%,
+	100% {
+		transform: translateY(0) translateX(-50%);
+	}
+	40% {
+		transform: translateY(-10px) translateX(-50%);
+	}
+	60% {
+		transform: translateY(-5px) translateX(-50%);
+	}
 }
