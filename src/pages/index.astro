@@ -1,12 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import GalaxyMV from '../sections/mv/components/GalaxyMV/GalaxyMV';
-import ColoredBgSection from '../sections/coloredBgSection/components/ColoredBgSection.astro';
+import AboutMe from '../sections/about-me/components/AboutMe.astro';
+import ColoredMessages from '../sections/colored-messages/components/ColoredMessages.astro';
 ---
 
 <Layout title="Animated MV">
   <main>
     <GalaxyMV client:load />
-    <ColoredBgSection/>
+    <ColoredMessages/>
+    <AboutMe />
   </main>
 </Layout>

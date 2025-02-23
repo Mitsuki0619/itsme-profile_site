@@ -7,7 +7,7 @@ import {
   Effects,
   Center,
 } from "@react-three/drei";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass";
 import gsap from "gsap";
 import { Lines } from "../Lines/Lines.jsx";
 import { Particles } from "../Particles/Particles.jsx";

@@ -1,0 +1,268 @@
+---
+---
+
+<section class="about-me">
+  <div class="nebula-container">
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
+  </div>
+  <div class="stars-container"></div>
+  <div class="content">
+    <h1 class="title">About Me</h1>
+    <div class="profile">
+      <div class="avatar">
+        <div class="avatar-placeholder">Your Photo Here</div>
+      </div>
+      <div class="bio">
+        <p>
+          Welcome to my cosmic corner of the web! I'm a passionate developer with a love for creating digital experiences that are out of this world. Just like the vast universe around us, my skills and interests are ever-expanding.
+        </p>
+        <p>
+          From front-end technologies that shine like distant stars to back-end systems as complex as galactic cores, I'm always exploring new horizons in the world of web development.
+        </p>
+        <p>
+          When I'm not coding, you might find me stargazing, reading sci-fi, or planning my next space-themed project. Let's embark on a journey through the digital cosmos together!
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-me {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0828 0%, #0c1526 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .nebula-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .nebula {
+    position: absolute;
+    filter: blur(60px);
+    opacity: 0.5;
+    mix-blend-mode: screen;
+  }
+
+  .nebula-1 {
+    top: 10%;
+    left: 20%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle at center, rgba(63, 0, 119, 0.4), transparent 70%);
+    animation: nebulaFloat 20s infinite alternate;
+  }
+
+  .nebula-2 {
+    top: 60%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(circle at center, rgba(0, 24, 82, 0.4), transparent 70%);
+    animation: nebulaFloat 15s infinite alternate-reverse;
+  }
+
+  .nebula-3 {
+    top: 30%;
+    left: 70%;
+    width: 35%;
+    height: 35%;
+    background: radial-gradient(circle at center, rgba(82, 0, 124, 0.4), transparent 70%);
+    animation: nebulaFloat 18s infinite alternate;
+  }
+
+  @keyframes nebulaFloat {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(20px, 20px);
+    }
+  }
+
+  .stars-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .title {
+    color: #ffffff;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 4rem;
+    font-weight: normal;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .profile {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 3rem;
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .avatar {
+    flex-shrink: 0;
+  }
+
+  .avatar-placeholder {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+  }
+
+  .bio {
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+
+  .bio p + p {
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .profile {
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .avatar-placeholder {
+      width: 200px;
+      height: 200px;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  function createStar() {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.position = 'absolute';
+    star.style.backgroundColor = '#ffffff';
+    star.style.borderRadius = '50%';
+
+    const size = Math.random() * 2 + 0.5;
+    star.style.width = `${size}px`;
+    star.style.height = `${size}px`;
+
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+
+    star.style.opacity = '0';
+
+    return star;
+  }
+
+  function initStars() {
+    const container = document.querySelector('.stars-container');
+    if (!container) return;
+
+    for (let i = 0; i < 450; i++) {
+      const star = createStar();
+      container.appendChild(star);
+
+      const baseDuration = Math.random() * 8 + 8;
+      const delay = Math.random() * 10;
+      const maxOpacity = Math.random() * 0.3 + 0.2;
+
+      gsap.to(star, {
+        opacity: maxOpacity,
+        duration: baseDuration / 2,
+        delay: delay,
+        ease: "power1.inOut",
+        yoyo: true,
+        repeat: -1,
+        onUpdate: () => updateStarGlow(star)
+      });
+    }
+
+    function updateStarGlow(star: HTMLDivElement) {
+      const currentOpacity = parseFloat(star.style.opacity);
+      const size = parseFloat(star.style.width);
+      const glowSize = size * (10 + currentOpacity * 20);
+      const glowOpacity = currentOpacity * 0.5;
+      star.style.boxShadow = `0 0 ${glowSize}px ${glowSize / 2}px rgba(255, 255, 255, ${glowOpacity})`;
+    }
+
+    function createShootingStar() {
+      const star = document.createElement('div');
+      star.style.position = 'absolute';
+      star.style.height = '2px';
+      star.style.background = 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%)';
+      star.style.opacity = '0';
+
+      container?.appendChild(star);
+
+      const startX = -50;
+      const startY = Math.random() * (window.innerHeight / 2);
+      const angle = Math.random() * 15 + 30;
+      const length = Math.random() * 200 + 100;
+
+      const endX = window.innerWidth + 50;
+      const endY = startY + (endX - startX) * Math.tan(angle * Math.PI / 180);
+
+      gsap.set(star, {
+        width: length,
+        x: startX,
+        y: startY,
+        rotation: angle,
+      });
+
+      gsap.to(star, {
+        x: endX,
+        y: endY,
+        opacity: 1,
+        duration: 2,
+        ease: "power1.in",
+        onComplete: () => {
+          star.remove();
+          setTimeout(createShootingStar, Math.random() * 6000 + 4000);
+        }
+      });
+    }
+
+    setTimeout(createShootingStar, Math.random() * 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', initStars);
+</script>
+
