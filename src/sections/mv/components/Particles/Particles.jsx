@@ -55,8 +55,8 @@ export function Particles({ count = 200 }) {
     particlesData.forEach((particle, i) => {
       gsap.to(particle, {
         opacity: 0.6,
-        duration: 1,
-        delay: i * 0.01,
+        duration: 0.5,
+        delay: 0,
         ease: "power2.out",
       });
     });
@@ -79,7 +79,7 @@ export function Particles({ count = 200 }) {
         Object.assign(particle, newParticle);
         gsap.to(particle, {
           opacity: 0.6,
-          duration: 1,
+          duration: 0.5,
           ease: "power2.out",
         });
       }
