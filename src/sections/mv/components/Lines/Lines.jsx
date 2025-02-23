@@ -52,8 +52,8 @@ export function Lines({ count = 80 }) {
     linesData.forEach((line, i) => {
       gsap.to(line, {
         scale: 1,
-        opacity: 0.7,
-        duration: 1,
+        opacity: 0.5,
+        duration: 0.5,
         delay: i * 0.01,
         ease: "power2.out",
       });
@@ -78,8 +78,8 @@ export function Lines({ count = 80 }) {
         Object.assign(line, newLine);
         gsap.to(line, {
           scale: 1,
-          opacity: 0.7,
-          duration: 2,
+          opacity: 0.5,
+          duration: 0.5,
           ease: "power2.out",
         });
       }
