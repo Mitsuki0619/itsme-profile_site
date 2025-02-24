@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Center,
 	Effects,
@@ -5,7 +7,7 @@ import {
 	OrbitControls,
 	Text3D,
 } from "@react-three/drei";
-import { Canvas, extend, useFrame } from "@react-three/fiber";
+import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -147,6 +149,7 @@ function Background() {
 }
 
 function Bloom() {
+	const { size, scene, camera } = useThree();
 	const bloomPass = useRef();
 
 	useEffect(() => {
@@ -165,6 +168,7 @@ function Bloom() {
 function AnimatedText() {
 	const textRef = useRef();
 	const [emissiveIntensity, setEmissiveIntensity] = useState(0.5);
+	const { viewport } = useThree();
 
 	useFrame(({ clock }) => {
 		if (textRef.current) {
@@ -174,18 +178,24 @@ function AnimatedText() {
 		}
 	});
 
+	// Adjust font size based on viewport width
+	const fontSize = Math.min(1.5, viewport.width / 15);
+	const maxWidth = Math.min(viewport.width * 0.9, 12); // Increased max width
+
 	return (
 		<Center>
 			<Text3D
 				ref={textRef}
 				font="/fonts/Work Sans_Regular.json"
-				size={1}
-				height={0.2}
+				size={fontSize}
+				height={0.15} // Increased height for more depth
+				curveSegments={12}
 				bevelEnabled
-				bevelThickness={0.01}
-				bevelSize={0.01}
+				bevelThickness={0.02}
+				bevelSize={0.02}
 				bevelOffset={0}
 				bevelSegments={5}
+				maxWidth={maxWidth}
 			>
 				mitsuki iwamura
 				<meshStandardMaterial
@@ -204,6 +214,10 @@ function AnimatedText() {
 export default function GalaxyMV() {
 	const containerRef = useRef();
 	const [showAnimations, setShowAnimations] = useState(false);
+	const [canvasSize, setCanvasSize] = useState({
+		width: "100%",
+		height: "100vh",
+	});
 
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -217,13 +231,20 @@ export default function GalaxyMV() {
 		const handleLoadingComplete = () => {
 			setTimeout(() => {
 				setShowAnimations(true);
-			}, 1500); // ローディング完了から1500ms遅延させてアニメーションを開始
+			}, 1500);
+		};
+
+		const handleResize = () => {
+			setCanvasSize({ width: "100%", height: "100vh" });
 		};
 
 		document.addEventListener("loadingComplete", handleLoadingComplete);
+		window.addEventListener("resize", handleResize);
+		handleResize(); // Initial call
 
 		return () => {
 			document.removeEventListener("loadingComplete", handleLoadingComplete);
+			window.removeEventListener("resize", handleResize);
 		};
 	}, []);
 
@@ -231,8 +252,8 @@ export default function GalaxyMV() {
 		<div
 			ref={containerRef}
 			style={{
-				width: "100%",
-				height: "100vh",
+				width: canvasSize.width,
+				height: canvasSize.height,
 				backgroundColor: "rgba(0, 0, 0, 0.85)",
 			}}
 		>
@@ -243,8 +264,8 @@ export default function GalaxyMV() {
 				<AnimatedText />
 				{showAnimations && (
 					<>
-						<Lines count={25} />
-						<Particles count={150} />
+						<Lines count={30} />
+						<Particles count={200} />
 					</>
 				)}
 				<Bloom />

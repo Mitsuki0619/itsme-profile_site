@@ -8,7 +8,7 @@
 <script>
   import { gsap } from 'gsap';
 
-  let cH: number = 600; // キャンバスの高さを600pxに増加
+  let cH: number = window.innerWidth <= 768 ? 300 : 600; // キャンバスの高さ
   let cW: number;
   let bgColor = "#8A2BE2"; // 紫色で開始
   const animations: gsap.core.Tween[] = [];
@@ -116,43 +116,43 @@
   };
 
   const drawText = (ctx: CanvasRenderingContext2D, text: string) => {
-    ctx.save();
-    const lines = text.split('\n');
-    let fontSize = 120;
-    let lineHeight = 130;
+  ctx.save();
+  const lines = text.split('\n');
+  let fontSize = window.innerWidth <= 768 ? 32 : 120;
+  let lineHeight = window.innerWidth <= 768 ? 70 : 130;
 
-    if (lines.some(line => line.length > 15) || lines.length > 2) {
-      fontSize = 100;
-      lineHeight = 110;
-    }
+  if (lines.some(line => line.length > 15) || lines.length > 2) {
+    fontSize = window.innerWidth <= 768 ? 32 : 100;
+    lineHeight = window.innerWidth <= 768 ? 60 : 110;
+  }
 
-    ctx.font = `bold ${fontSize}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+  ctx.font = `bold ${fontSize}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  const totalHeight = lineHeight * (lines.length - 1);
+  const startY = cH / 2 - totalHeight / 2;
+
+  lines.forEach((line, index) => {
+    const y = startY + index * lineHeight;
     
-    const totalHeight = lineHeight * (lines.length - 1);
-    const startY = cH / 2 - totalHeight / 2;
-
-    lines.forEach((line, index) => {
-      const y = startY + index * lineHeight;
-      
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillText(line, cW / 2, y);
-      
-      ctx.globalCompositeOperation = 'screen';
-      
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-      ctx.fillText(line, cW / 2 + glitchOffsets.r.x, y + glitchOffsets.r.y);
-      
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
-      ctx.fillText(line, cW / 2 + glitchOffsets.g.x, y + glitchOffsets.g.y);
-      
-      ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
-      ctx.fillText(line, cW / 2 + glitchOffsets.b.x, y + glitchOffsets.b.y);
-    });
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(line, cW / 2, y);
     
-    ctx.restore();
-  };
+    ctx.globalCompositeOperation = 'screen';
+    
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.r.x, y + glitchOffsets.r.y);
+    
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.g.x, y + glitchOffsets.g.y);
+    
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.b.x, y + glitchOffsets.b.y);
+  });
+  
+  ctx.restore();
+};
 
   const triggerAnimation = (x: number, y: number) => {
     const currentColor = colorPicker.current();
@@ -268,16 +268,18 @@
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    const barHeight = window.innerWidth <= 768 ? 50 : 100;
 
-    // アニメーションを中央の400pxの範囲内に制限
-    if (y > 100 && y < 500) {
+    // アニメーションを中央の領域に制限 (バーの高さに応じて調整)
+    if (y > barHeight && y < (cH - barHeight)) {
       triggerAnimation(x, y);
     }
   };
 
   const autoTriggerAnimation = () => {
     const x = Math.random() * cW;
-    const y = Math.random() * 400 + 100; // 中央の400pxの範囲内でランダムなy座標を生成
+    const barHeight = window.innerWidth <= 768 ? 50 : 100;
+    const y = Math.random() * (cH - barHeight * 2) + barHeight;
     triggerAnimation(x, y);
 
     const nextDelay = Math.random() * 2500 + 500;
@@ -285,29 +287,33 @@
   };
 
   const animate = (ctx: CanvasRenderingContext2D) => {
-    ctx.fillStyle = '#000000'; // 背景を黒で塗りつぶす
-    ctx.fillRect(0, 0, cW, cH);
-    
-    // 中央の500x400の領域を描画
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 100, cW, 400);
-    
-    circles.forEach((circle) => circle.draw(ctx));
-    drawText(ctx, currentText);
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, cW, cH);
+
+  const barHeight = window.innerWidth <= 768 ? 50 : 100;
+
+  // 中央の領域を描画 (モバイル時は上部の余白を調整)
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, barHeight, cW, cH - barHeight * 2);
+
+  circles.forEach((circle) => circle.draw(ctx));
+  drawText(ctx, currentText);
 
   // 黒い帯を最後に描画
   ctx.fillStyle = '#000000';
-  ctx.fillRect(0, 0, cW, 100);  // 上の帯
-  ctx.fillRect(0, 500, cW, 100);  // 下の帯
+  ctx.fillRect(0, 0, cW, barHeight);  // 上の帯
+  ctx.fillRect(0, cH - barHeight, cW, barHeight);  // 下の帯
 
   requestAnimationFrame(() => animate(ctx));
 };
 
   const resizeCanvas = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     cW = canvas.clientWidth;
+    cH = window.innerWidth <= 768 ? 300 : 600; // Adjust canvas height for mobile
     canvas.width = cW * devicePixelRatio;
     canvas.height = cH * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
+    canvas.style.height = `${cH}px`; // Set the CSS height to match the new canvas height
   };
 
   const initCanvas = () => {
@@ -342,5 +348,11 @@
     height: 600px !important;
     display: block;
   }
+
+@media (max-width: 768px) {
+  #explodingCanvas {
+    height: 300px !important;
+  }
+}
 </style>
 
