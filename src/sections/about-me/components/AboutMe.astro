@@ -9,13 +9,13 @@
         <div class="avatar-placeholder">Your Photo Here</div>
       </div>
       <div class="bio">
-        <p>
+        <p class="bio-paragraph">
           Welcome to my cosmic corner of the web! I'm a passionate developer with a love for creating digital experiences that are out of this world. Just like the vast universe around us, my skills and interests are ever-expanding.
         </p>
-        <p>
+        <p class="bio-paragraph">
           From front-end technologies that shine like distant stars to back-end systems as complex as galactic cores, I'm always exploring new horizons in the world of web development.
         </p>
-        <p>
+        <p class="bio-paragraph">
           When I'm not coding, you might find me stargazing, reading sci-fi, or planning my next space-themed project. Let's embark on a journey through the digital cosmos together!
         </p>
       </div>
@@ -23,77 +23,151 @@
   </div>
 </section>
 
+<script>
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const aboutSection = document.querySelector('#about-me-section');
+  const title = aboutSection?.querySelector('.title');
+  const avatar = aboutSection?.querySelector('.avatar');
+  const bioParagraphs = aboutSection?.querySelectorAll('.bio-paragraph');
+
+  if (aboutSection && title && avatar && bioParagraphs) {
+    // Title animation
+    gsap.from(title, {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: aboutSection,
+        start: 'top 80%',
+        toggleActions: 'play none none reverse'
+      }
+    });
+
+    // Avatar animation
+    gsap.from(avatar, {
+      opacity: 0,
+      scale: 0.8,
+      duration: 1,
+      ease: 'back.out(1.7)',
+      scrollTrigger: {
+        trigger: aboutSection,
+        start: 'top 70%',
+        toggleActions: 'play none none reverse'
+      }
+    });
+
+    // Bio paragraphs animation
+    bioParagraphs.forEach((paragraph, index) => {
+      gsap.from(paragraph, {
+        opacity: 0,
+        x: index % 2 === 0 ? -50 : 50,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: paragraph,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+  }
+});
+</script>
+
 <style>
-  .about-me {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
+.about-me {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.content {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 4rem;
+  font-weight: normal;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.profile {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 3rem;
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+}
+
+.bio {
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.bio p + p {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .profile {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     padding: 2rem;
   }
 
-  .content {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .title {
-    color: #ffffff;
-    font-size: 3rem;
-    text-align: center;
-    margin-bottom: 4rem;
-    font-weight: normal;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-  }
-
-  .profile {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    padding: 3rem;
-    display: flex;
-    gap: 3rem;
-    align-items: flex-start;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-  }
-
   .avatar {
-    flex-shrink: 0;
+    margin-bottom: 2rem;
   }
 
   .avatar-placeholder {
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 1rem;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
   }
 
   .bio {
-    color: #ffffff;
-    font-size: 1.1rem;
-    line-height: 1.8;
+    width: 100%;
   }
 
-  .bio p + p {
-    margin-top: 1.5rem;
+  .bio-paragraph {
+    text-align: left;
   }
-
-  @media (max-width: 768px) {
-    .profile {
-      flex-direction: column;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .avatar-placeholder {
-      width: 200px;
-      height: 200px;
-    }
-  }
+}
 </style>
 
