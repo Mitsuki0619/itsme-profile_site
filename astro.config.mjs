@@ -13,5 +13,7 @@ export default defineConfig({
       service: passthroughImageService(),
 	},
 
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    imageService: 'cloudflare'
+ }),
 });

@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "wrangler pages dev ./dist",
     "astro": "astro",
     "check": "biome check ./src",
     "check:fix": "biome check --write ./src",
-    "deploy": "pnpm run build && wrangler pages deploy"
+    "deploy": "pnpm run build && wrangler pages deploy ./dist"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.2.2",
