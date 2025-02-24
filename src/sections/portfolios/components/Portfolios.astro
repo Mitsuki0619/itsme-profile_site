@@ -1,0 +1,470 @@
+---
+import { Image } from "astro:assets";
+import onSukeThumbnail from "../../../assets/images/on-suke_thmbnail.png";
+import suburemixThumbnail from "../../../assets/images/suburemix_thumbnail.png";
+
+interface PortfolioItem {
+	id: number;
+	title: string;
+	image: ImageMetadata;
+	description: string;
+	bts: string;
+	tags: {
+		name: string;
+		detail: string;
+	}[];
+	repository: string;
+	url: string;
+}
+
+const portfolioItems: PortfolioItem[] = [
+	{
+		id: 1,
+		title: "on-suke | オンスケ - 予定管理アプリ",
+		image: onSukeThumbnail,
+		description:
+			"予定の登録、編集、削除といった基本的な予定表機能に加え、カレンダーで予定を確認できる機能や、予定に対してタスクが登録できたり、予定のカテゴリを登録できたりするアプリ。\nLINEアカウントと連携することで、毎日18時ごろに明日の予定がLINEのon-sukeアカウントから通知される。",
+		bts: "スピーディに開発することを意識し、大体8人日程度で要件定義から実装まで終わった。 v0を活用したため、デザイン、スタイリングはほとんどAIに任せ、自身はシステム部分の開発に専念した。",
+		tags: [
+			{
+				name: "React",
+				detail: "Next.jsのApp Routerを試したかったためReactを選定",
+			},
+			{ name: "Next.js", detail: "Next.jsのApp Routerを試したかったため選定" },
+			{ name: "TypeScript", detail: "JS使うならもはや必須" },
+			{
+				name: "Prisma",
+				detail: "TypedSQLという機能が追加され最近勢いもあったので選定",
+			},
+			{
+				name: "Vercel",
+				detail: "Next.js使うならVercelが最適だろうということで選定",
+			},
+		],
+		repository: "https://github.com/Mitsuki0619/on-suke",
+		url: "https://on-suke.vercel.app/",
+	},
+	{
+		id: 2,
+		title: "suburemix | 素振りみっくす - ブログアプリ",
+		image: suburemixThumbnail,
+		description:
+			"Remixを素振り（技術の検証のことを指す）するために作ったブログアプリケーション。\nログイン認証（OIDC）、ブログの投稿・編集・削除・閲覧が可能なシンプルなCRUDアプリケーション",
+		bts: "v0を活用していたため、スタイリングはほとんどAIに任せ、自分はシステム部分の実装やRemixの思想理解に専念した。",
+		tags: [
+			{ name: "React", detail: "Remixを試したかったため選定" },
+			{
+				name: "Remix",
+				detail:
+					"Reactを専門とする身として、Remixは試しておかねばと感じていたため選定",
+			},
+			{ name: "TypeScript", detail: "JS使うならもはや必須" },
+			{
+				name: "Prisma",
+				detail: "TypedSQLという機能が追加され最近勢いもあったので選定",
+			},
+			{
+				name: "Cloudflare Pages/Workers",
+				detail:
+					"無料で早くて使いやすい 無料枠もできることが多く、今最も勢いがあると感じていたため選定",
+			},
+		],
+		repository: "https://github.com/Mitsuki0619/suburemix",
+		url: "https://ms-tech-blog-remix-485.pages.dev",
+	},
+];
+---
+
+<section class="portfolios-section">
+  <div class="container">
+    <h2 class="section-title">Portfolio</h2>
+    <div class="portfolio-grid">
+      {portfolioItems.map((item) => (
+        <div class="portfolio-item" data-id={item.id}>
+          <div class="portfolio-content">
+            <div class="portfolio-image">
+              <Image src={item.image || "/placeholder.svg"} alt={item.title} width={600} height={400} />
+            </div>
+            <div class="portfolio-info">
+              <h3>{item.title}</h3>
+              <div class="portfolio-tags">
+                {item.tags.map((tag) => (
+                  <span class="tag" title={tag.detail}>{tag.name}</span>
+                ))}
+              </div>
+              <p class="portfolio-description">{item.description}</p>
+              <button class="expand-btn" aria-expanded="false" aria-controls={`details-${item.id}`}>
+                <span class="expand-text">詳細</span>
+                <span class="collapse-text">閉じる</span>
+              </button>
+            </div>
+          </div>
+          <div id={`details-${item.id}`} class="portfolio-details" aria-hidden="true">
+            <div class="details-content">
+              <h4>開発秘話</h4>
+              <p>{item.bts}</p>
+              <h4>選定技術と軸</h4>
+              <ul class="tech-list">
+                {item.tags.map((tag) => (
+                  <li>
+                    <span class="tech-name">{tag.name}</span>
+                    <span class="tech-detail">{tag.detail}</span>
+                  </li>
+                ))}
+              </ul>
+              <div class="action-buttons">
+                <a href={item.repository} target="_blank" rel="noopener noreferrer" class="cta-button repository-btn">
+                  ソースコードを見る
+                </a>
+                <a href={item.url} target="_blank" rel="noopener noreferrer" class="cta-button demo-btn">
+                  訪問する
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+    // 登場時のアニメーション
+    gsap.utils.toArray('.portfolio-item').forEach((item, i) => {
+      if(!(item instanceof HTMLElement)) return
+      gsap.from(item, {
+        opacity: 0,
+        y: 50,
+        duration: 0.6,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: item,
+          start: 'top bottom-=100',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+
+    // Expand/Collapseの処理
+    document.querySelectorAll('.expand-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const portfolioItem = button.closest('.portfolio-item');
+        const detailsSection = portfolioItem?.querySelector('.portfolio-details');
+        const detailsContent = detailsSection?.querySelector('.details-content');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        button.setAttribute('aria-expanded', (!isExpanded).toString());
+        detailsSection?.setAttribute('aria-hidden', isExpanded.toString());
+
+        if(!(detailsSection instanceof HTMLElement) || !(detailsContent instanceof HTMLElement) || !(portfolioItem instanceof HTMLElement)) return;
+
+        if (!isExpanded) {
+          portfolioItem?.classList.add('expanded');
+          gsap.to(detailsSection, {
+            height: detailsContent?.offsetHeight,
+            duration: 0.3,
+            ease: 'power2.out',
+            onStart: () => {
+              detailsSection.style.overflow = 'hidden';
+            },
+            onComplete: () => {
+              detailsSection.style.height = 'auto';
+              detailsSection.style.overflow = 'visible';
+              ScrollTrigger.refresh();
+            }
+          });
+          return
+        }
+        gsap.to(detailsSection, {
+          height: 0,
+          duration: 0.3,
+          ease: 'power2.out',
+          onStart: () => {
+            detailsSection.style.overflow = 'hidden';
+          },
+          onComplete: () => {
+            portfolioItem.classList.remove('expanded');
+            ScrollTrigger.refresh();
+          }
+        });
+      });
+    });
+
+    // ホバーアニメーション
+    portfolioItems.forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        gsap.to(item, {
+          scale: 1.03,
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
+          duration: 0.2,
+          ease: 'power2.out'
+        });
+      });
+      item.addEventListener('mouseleave', () => {
+        gsap.to(item, {
+          scale: 1,
+          boxShadow: '0 15px 35px rgba(0, 0, 0, 0.3)',
+          duration: 0.2,
+          ease: 'power2.out'
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .portfolios-section {
+    background-color: #050505;
+    min-height: 100vh;
+    padding: 6rem 0;
+    overflow: hidden;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, #1abc9c);
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .portfolio-item {
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+  }
+
+  .portfolio-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .portfolio-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+  }
+
+  .portfolio-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .portfolio-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .portfolio-info h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .portfolio-description {
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+  }
+
+  .expand-btn {
+    background-color: transparent;
+    color: #3498db;
+    border: 2px solid #3498db;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .expand-btn:hover {
+    background-color: #3498db;
+    color: #fff;
+  }
+
+  .expand-btn .collapse-text {
+    display: none;
+  }
+
+  .portfolio-item.expanded .expand-btn .expand-text {
+    display: none;
+  }
+
+  .portfolio-item.expanded .expand-btn .collapse-text {
+    display: inline;
+  }
+
+  .portfolio-details {
+    background-color: rgba(30, 30, 30, 0.95);
+    height: 0;
+    overflow: hidden;
+  }
+
+  .details-content {
+    padding: 1.5rem;
+  }
+
+  .portfolio-details h4 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .portfolio-details p, .portfolio-details ul {
+    color: #ccc;
+    margin-bottom: 1rem;
+  }
+
+  .tech-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .tech-list li {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tech-name {
+    color: #3498db;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+
+  .tech-detail {
+    color: #ccc;
+    font-size: 0.9rem;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .cta-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    flex: 1;
+    text-align: center;
+  }
+
+  .repository-btn {
+    background-color: #2c3e50;
+    color: #fff;
+  }
+
+  .repository-btn:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
+  }
+
+  .demo-btn {
+    background-color: #3498db;
+    color: #fff;
+  }
+
+  .demo-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 2.5rem;
+    }
+
+    .portfolio-item {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .portfolio-info h3 {
+      font-size: 1.2rem;
+    }
+
+    .portfolio-description {
+      font-size: 0.9rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+  }
+</style>
+
