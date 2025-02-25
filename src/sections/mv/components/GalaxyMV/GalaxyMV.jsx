@@ -1,42 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Canvas, extend, useThree, useFrame } from "@react-three/fiber";
 import {
-  Text3D,
-  Environment,
-  OrbitControls,
-  Effects,
-  Center,
+	Center,
+	Effects,
+	Environment,
+	OrbitControls,
+	Text3D,
 } from "@react-three/drei";
-import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass";
+import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass";
 import { Lines } from "../Lines/Lines.jsx";
 import { Particles } from "../Particles/Particles.jsx";
-import * as THREE from "three";
 import ScrollDownButton from "../ScrollDownButton/ScrollDownButton.js";
 
 extend({ UnrealBloomPass });
 
 function Background() {
-  const shaderRef = useRef();
+	const shaderRef = useRef();
 
-  useFrame(({ clock }) => {
-    if (shaderRef.current) {
-      shaderRef.current.uniforms.time.value = clock.elapsedTime;
-    }
-  });
+	useFrame(({ clock }) => {
+		if (shaderRef.current) {
+			shaderRef.current.uniforms.time.value = clock.elapsedTime;
+		}
+	});
 
-  return (
-    <mesh>
-      <sphereGeometry args={[50, 64, 64]} />
-      <shaderMaterial
-        ref={shaderRef}
-        side={THREE.BackSide}
-        uniforms={{
-          time: { value: 0 },
-        }}
-        vertexShader={`
+	return (
+		<mesh>
+			<sphereGeometry args={[50, 64, 64]} />
+			<shaderMaterial
+				ref={shaderRef}
+				side={THREE.BackSide}
+				uniforms={{
+					time: { value: 0 },
+				}}
+				vertexShader={`
           varying vec3 vWorldPosition;
           
           void main() {
@@ -44,7 +44,7 @@ function Background() {
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
         `}
-        fragmentShader={`
+				fragmentShader={`
           varying vec3 vWorldPosition;
           uniform float time;
           
@@ -143,162 +143,162 @@ function Background() {
             gl_FragColor = vec4(color, 1.0);
           }
         `}
-      />
-    </mesh>
-  );
+			/>
+		</mesh>
+	);
 }
 
 function Bloom() {
-  const { size, scene, camera } = useThree();
-  const bloomPass = useRef();
+	const { size, scene, camera } = useThree();
+	const bloomPass = useRef();
 
-  useEffect(() => {
-    bloomPass.current.strength = 0.5;
-    bloomPass.current.radius = 0.8;
-    bloomPass.current.threshold = 0.1;
-  }, []);
+	useEffect(() => {
+		bloomPass.current.strength = 0.5;
+		bloomPass.current.radius = 0.8;
+		bloomPass.current.threshold = 0.1;
+	}, []);
 
-  return (
-    <Effects disableGamma>
-      <unrealBloomPass ref={bloomPass} attachArray="passes" />
-    </Effects>
-  );
+	return (
+		<Effects disableGamma>
+			<unrealBloomPass ref={bloomPass} attachArray="passes" />
+		</Effects>
+	);
 }
 
 function AnimatedText() {
-  const textRef = useRef();
-  const [emissiveIntensity, setEmissiveIntensity] = useState(0.5);
-  const { viewport } = useThree();
+	const textRef = useRef();
+	const [emissiveIntensity, setEmissiveIntensity] = useState(0.5);
+	const { viewport } = useThree();
 
-  useFrame(({ clock }) => {
-    if (textRef.current) {
-      textRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.5) * 0.1;
-      const pulsate = Math.sin(clock.elapsedTime * 2) * 0.5 + 0.5;
-      setEmissiveIntensity(0.5 + pulsate * 0.5);
-    }
-  });
+	useFrame(({ clock }) => {
+		if (textRef.current) {
+			textRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.5) * 0.1;
+			const pulsate = Math.sin(clock.elapsedTime * 2) * 0.5 + 0.5;
+			setEmissiveIntensity(0.5 + pulsate * 0.5);
+		}
+	});
 
-  // Adjust font size based on viewport width
-  const fontSize = Math.min(1.5, viewport.width / 15);
-  const maxWidth = Math.min(viewport.width * 0.9, 12); // Increased max width
+	// Adjust font size based on viewport width
+	const fontSize = Math.min(1.5, viewport.width / 15);
+	const maxWidth = Math.min(viewport.width * 0.9, 12); // Increased max width
 
-  return (
-    <Center>
-      <Text3D
-        ref={textRef}
-        font="/fonts/Work Sans_Regular.json"
-        size={fontSize}
-        height={0.15} // Increased height for more depth
-        curveSegments={12}
-        bevelEnabled
-        bevelThickness={0.02}
-        bevelSize={0.02}
-        bevelOffset={0}
-        bevelSegments={5}
-        maxWidth={maxWidth}
-      >
-        mitsuki iwamura
-        <meshStandardMaterial
-          color="#fff"
-          emissive="#fff"
-          emissiveIntensity={emissiveIntensity}
-          metalness={0.2}
-          roughness={0.3}
-          toneMapped={false}
-        />
-      </Text3D>
-    </Center>
-  );
+	return (
+		<Center>
+			<Text3D
+				ref={textRef}
+				font="/fonts/Work Sans_Regular.json"
+				size={fontSize}
+				height={0.15} // Increased height for more depth
+				curveSegments={12}
+				bevelEnabled
+				bevelThickness={0.02}
+				bevelSize={0.02}
+				bevelOffset={0}
+				bevelSegments={5}
+				maxWidth={maxWidth}
+			>
+				mitsuki iwamura
+				<meshStandardMaterial
+					color="#fff"
+					emissive="#fff"
+					emissiveIntensity={emissiveIntensity}
+					metalness={0.2}
+					roughness={0.3}
+					toneMapped={false}
+				/>
+			</Text3D>
+		</Center>
+	);
 }
 
 export default function GalaxyMV() {
-  const containerRef = useRef();
-  const [showAnimations, setShowAnimations] = useState(false);
-  const [canvasSize, setCanvasSize] = useState({
-    width: "100%",
-    height: "100vh",
-  });
+	const containerRef = useRef();
+	const [showAnimations, setShowAnimations] = useState(false);
+	const [canvasSize, setCanvasSize] = useState({
+		width: "100%",
+		height: "100vh",
+	});
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+	useEffect(() => {
+		if (!containerRef.current) return;
 
-    gsap.to(containerRef.current, {
-      backgroundColor: "rgba(0, 0, 0, 0.85)",
-      duration: 1,
-      ease: "power2.inOut",
-    });
+		gsap.to(containerRef.current, {
+			backgroundColor: "rgba(0, 0, 0, 0.85)",
+			duration: 1,
+			ease: "power2.inOut",
+		});
 
-    const handleLoadingComplete = () => {
-      setTimeout(() => {
-        setShowAnimations(true);
-      }, 1500);
-    };
+		const handleLoadingComplete = () => {
+			setTimeout(() => {
+				setShowAnimations(true);
+			}, 1500);
+		};
 
-    const handleResize = () => {
-      const height = window.innerWidth <= 768 ? "80vh" : "100vh";
-      setCanvasSize({ width: "100%", height: height });
-    };
+		const handleResize = () => {
+			const height = window.innerWidth <= 768 ? "80vh" : "100vh";
+			setCanvasSize({ width: "100%", height: height });
+		};
 
-    document.addEventListener("loadingComplete", handleLoadingComplete);
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Initial call
+		document.addEventListener("loadingComplete", handleLoadingComplete);
+		window.addEventListener("resize", handleResize);
+		handleResize(); // Initial call
 
-    return () => {
-      document.removeEventListener("loadingComplete", handleLoadingComplete);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+		return () => {
+			document.removeEventListener("loadingComplete", handleLoadingComplete);
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
 
-  return (
-    <div
-      ref={containerRef}
-      style={{
-        width: canvasSize.width,
-        height: canvasSize.height,
-        backgroundColor: "rgba(0, 0, 0, 0.85)",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <Canvas
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-        }}
-        camera={{ position: [0, 0, 12], fov: 60 }}
-      >
-        <Background />
-        <OrbitControls enableZoom={false} enablePan={true} />
-        <Environment preset="night" />
-        <AnimatedText />
-        {showAnimations && (
-          <>
-            <Lines count={30} />
-            <Particles count={200} />
-          </>
-        )}
-        <Bloom />
-        <ambientLight intensity={0.3} />
-        <pointLight position={[10, 10, 10]} intensity={1.0} />
-        <spotLight
-          position={[-5, 5, 0]}
-          angle={0.5}
-          penumbra={0.5}
-          intensity={1.0}
-          castShadow
-        />
-      </Canvas>
-      <ScrollDownButton
-        style={{
-          position: "absolute",
-          bottom: "2rem",
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-      />
-    </div>
-  );
+	return (
+		<div
+			ref={containerRef}
+			style={{
+				width: canvasSize.width,
+				height: canvasSize.height,
+				backgroundColor: "rgba(0, 0, 0, 0.85)",
+				position: "relative",
+				overflow: "hidden",
+			}}
+		>
+			<Canvas
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					width: "100%",
+					height: "100%",
+				}}
+				camera={{ position: [0, 0, 12], fov: 60 }}
+			>
+				<Background />
+				<OrbitControls enableZoom={false} enablePan={true} />
+				<Environment preset="night" />
+				<AnimatedText />
+				{showAnimations && (
+					<>
+						<Lines count={30} />
+						<Particles count={200} />
+					</>
+				)}
+				<Bloom />
+				<ambientLight intensity={0.3} />
+				<pointLight position={[10, 10, 10]} intensity={1.0} />
+				<spotLight
+					position={[-5, 5, 0]}
+					angle={0.5}
+					penumbra={0.5}
+					intensity={1.0}
+					castShadow
+				/>
+			</Canvas>
+			<ScrollDownButton
+				style={{
+					position: "absolute",
+					bottom: "2rem",
+					left: "50%",
+					transform: "translateX(-50%)",
+				}}
+			/>
+		</div>
+	);
 }
