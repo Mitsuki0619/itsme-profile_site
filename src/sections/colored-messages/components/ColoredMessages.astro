@@ -1,0 +1,369 @@
+---
+---
+
+<div class="colored-messages-container">
+  <canvas id="explodingCanvas" class="exploding-canvas"></canvas>
+</div>
+
+<script>
+import { gsap } from 'gsap';
+
+  let cH: number = window.innerWidth <= 768 ? 300 : 600; // キャンバスの高さ
+let cW: number;
+let bgColor = "#8A2BE2"; // 紫色で開始
+const animations: gsap.core.Tween[] = [];
+const circles: Circle[] = [];
+let currentText = "";
+let glitchOffsets = { r: { x: 0, y: 0 }, g: { x: 0, y: 0 }, b: { x: 0, y: 0 } };
+
+const colorPicker = (() => {
+  const colors = ["#8A2BE2", "#FFB6C1", "#000033", "#FF4500", "#1E90FF"];
+  let index = 0;
+  return {
+    next: () => {
+      index = index++ < colors.length - 1 ? index : 0;
+      return colors[index];
+    },
+    current: () => colors[index],
+  };
+})();
+
+const textPicker = (() => {
+  const texts = [
+    "Life moves fast.\nReact wisely.",
+    "Energy flows\nwhere you React.",
+    "Broaden your Vue,\nexpand your possibilities.",
+    "Every Type\ntells a story.",
+    "Strength comes\nfrom the right Type.",
+    "Don't wait.\nTake the Next move.",
+    "Dream big.\nGo further.",
+    "Light transforms\nthrough a Prisma,\nso do you.",
+  ];
+  return {
+    next: () => {
+      return texts[Math.floor(Math.random() * texts.length)];
+    },
+    current: () => texts[Math.floor(Math.random() * texts.length)],
+  };
+})();
+
+class Circle {
+  x: number = 0;
+  y: number = 0;
+  r: number = 0;
+  fill?: string;
+  stroke?: { width: number; color: string };
+  opacity?: number;
+
+  constructor(opts: Partial<Circle>) {
+    Object.assign(this, opts);
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.globalAlpha = this.opacity || 1;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
+    if (this.stroke) {
+      ctx.strokeStyle = this.stroke.color;
+      ctx.lineWidth = this.stroke.width;
+      ctx.stroke();
+    }
+    if (this.fill) {
+      ctx.fillStyle = this.fill;
+      ctx.fill();
+    }
+    ctx.closePath();
+    ctx.globalAlpha = 1;
+  }
+}
+
+const removeAnimation = (animation: gsap.core.Tween) => {
+  const index = animations.indexOf(animation);
+  if (index > -1) animations.splice(index, 1);
+};
+
+const removeCircle = (circle: Circle) => {
+  const index = circles.indexOf(circle);
+  if (index > -1) circles.splice(index, 1);
+};
+
+const calcPageFillRadius = (x: number, y: number) => {
+  const l = Math.max(x - 0, cW - x);
+  const h = Math.max(y - 0, cH - y);
+  return Math.sqrt(Math.pow(l, 2) + Math.pow(h, 2));
+};
+
+const glitchText = (ctx: CanvasRenderingContext2D, newText: string) => {
+  const glitchDuration = 150;
+  const steps = 6;
+  let currentStep = 0;
+
+  const glitchInterval = setInterval(() => {
+    if (currentStep === steps) {
+      currentText = newText;
+      glitchOffsets = { r: { x: 0, y: 0 }, g: { x: 0, y: 0 }, b: { x: 0, y: 0 } };
+      clearInterval(glitchInterval);
+    } else {
+      currentText = newText;
+      glitchOffsets = {
+        r: { x: Math.random() * 20 - 10, y: Math.random() * 20 - 10 },
+        g: { x: Math.random() * 20 - 10, y: Math.random() * 20 - 10 },
+        b: { x: Math.random() * 20 - 10, y: Math.random() * 20 - 10 }
+      };
+    }
+    currentStep++;
+  }, glitchDuration / steps);
+};
+
+const drawText = (ctx: CanvasRenderingContext2D, text: string) => {
+  ctx.save();
+  const lines = text.split('\n');
+  let fontSize = window.innerWidth <= 768 ? 32 : 120;
+  let lineHeight = window.innerWidth <= 768 ? 70 : 130;
+
+  if (lines.some(line => line.length > 15) || lines.length > 2) {
+    fontSize = window.innerWidth <= 768 ? 32 : 100;
+    lineHeight = window.innerWidth <= 768 ? 60 : 110;
+  }
+
+  ctx.font = `bold ${fontSize}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const totalHeight = lineHeight * (lines.length - 1);
+  const startY = cH / 2 - totalHeight / 2;
+
+  lines.forEach((line, index) => {
+    const y = startY + index * lineHeight;
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(line, cW / 2, y);
+    
+    ctx.globalCompositeOperation = 'screen';
+    
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.r.x, y + glitchOffsets.r.y);
+    
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.g.x, y + glitchOffsets.g.y);
+    
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.fillText(line, cW / 2 + glitchOffsets.b.x, y + glitchOffsets.b.y);
+  });
+
+  ctx.restore();
+};
+
+const triggerAnimation = (x: number, y: number) => {
+  const currentColor = colorPicker.current();
+  const nextColor = colorPicker.next();
+  const targetR = calcPageFillRadius(x, y);
+  const rippleSize = Math.min(200, cW * 0.4);
+  const minCoverDuration = 0.75;
+
+  const pageFill = new Circle({
+    x: x,
+    y: y,
+    r: 0,
+    fill: nextColor,
+  });
+  circles.push(pageFill);
+
+  const fillAnimation = gsap.to(pageFill, {
+    r: targetR,
+    duration: Math.max(targetR / 2000, minCoverDuration),
+    ease: "power4.out",
+    onComplete: () => {
+      bgColor = pageFill.fill || "";
+      removeAnimation(fillAnimation);
+      removeCircle(pageFill);
+    },
+  });
+
+  const ripple = new Circle({
+    x: x,
+    y: y,
+    r: 0,
+    fill: currentColor,
+    stroke: {
+      width: 3,
+      color: currentColor,
+    },
+    opacity: 1,
+  });
+  circles.push(ripple);
+
+  const rippleAnimation = gsap.to(ripple, {
+    r: rippleSize,
+    opacity: 0,
+    duration: 0.9,
+    ease: "expo.out",
+    onComplete: () => {
+      removeAnimation(rippleAnimation);
+      removeCircle(ripple);
+    },
+  });
+
+  for (let i = 0; i < 32; i++) {
+    const particle = new Circle({
+      x: x,
+      y: y,
+      fill: currentColor,
+      r: gsap.utils.random(24, 48),
+      opacity: 1,
+    });
+    circles.push(particle);
+
+    const particleAnimation = gsap.to(particle, {
+      x: particle.x + gsap.utils.random(-rippleSize, rippleSize),
+      y:
+        particle.y +
+        gsap.utils.random(-rippleSize * 1.15, rippleSize * 1.15),
+      r: 0,
+      opacity: 0,
+      duration: gsap.utils.random(1, 1.3),
+      ease: "expo.out",
+      onComplete: () => {
+        removeAnimation(particleAnimation);
+        removeCircle(particle);
+      },
+    });
+    animations.push(particleAnimation);
+  }
+
+  animations.push(fillAnimation, rippleAnimation);
+
+  const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const newText = textPicker.next();
+    glitchText(ctx, newText);
+  }
+};
+
+const handleEvent = (e: MouseEvent | TouchEvent) => {
+  if ("touches" in e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    e = new MouseEvent('touchstart', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      detail: touch.identifier,
+      screenX: touch.screenX,
+      screenY: touch.screenY,
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+      button: 0,
+      buttons: 1,
+      relatedTarget: null
+    });
+  }
+
+  const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const barHeight = window.innerWidth <= 768 ? 50 : 100;
+
+  // アニメーションを中央の領域に制限 (バーの高さに応じて調整)
+  if (y > barHeight && y < (cH - barHeight)) {
+    triggerAnimation(x, y);
+  }
+};
+
+const autoTriggerAnimation = () => {
+  const x = Math.random() * cW;
+  const barHeight = window.innerWidth <= 768 ? 50 : 100;
+  const y = Math.random() * (cH - barHeight * 2) + barHeight;
+  triggerAnimation(x, y);
+
+  const nextDelay = Math.random() * 2500 + 500;
+  setTimeout(autoTriggerAnimation, nextDelay);
+};
+
+const animate = (ctx: CanvasRenderingContext2D) => {
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, cW, cH);
+
+  const barHeight = window.innerWidth <= 768 ? 50 : 100;
+
+  // 中央の領域を描画 (モバイル時は上部の余白を調整)
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, barHeight, cW, cH - barHeight * 2);
+
+  circles.forEach((circle) => circle.draw(ctx));
+  drawText(ctx, currentText);
+
+  // 黒い帯を最後に描画
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, cW, barHeight);  // 上の帯
+  ctx.fillRect(0, cH - barHeight, cW, barHeight);  // 下の帯
+
+  requestAnimationFrame(() => animate(ctx));
+};
+
+const resizeCanvas = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+  cW = canvas.clientWidth;
+    cH = window.innerWidth <= 768 ? 300 : 600;
+  canvas.width = cW * devicePixelRatio;
+  canvas.height = cH * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  canvas.style.height = `${cH}px`;
+};
+
+const initCanvas = () => {
+  const canvas = document.getElementById('explodingCanvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+
+  if (ctx) {
+    resizeCanvas(canvas, ctx);
+    window.addEventListener("resize", () => resizeCanvas(canvas, ctx));
+    
+    // タッチイベントとマウスイベントの両方を設定
+    canvas.addEventListener("mousedown", handleEvent);
+    canvas.addEventListener("touchstart", handleEvent, { passive: false });
+
+    currentText = textPicker.current();
+    animate(ctx);
+
+    autoTriggerAnimation();
+  }
+};
+
+(() => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCanvas);
+  } else {
+    initCanvas();
+  }
+})();
+</script>
+
+<style>
+.colored-messages-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.exploding-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+@media (max-width: 768px) {
+  .colored-messages-container {
+    height: 300px;
+  }
+}
+</style>
+

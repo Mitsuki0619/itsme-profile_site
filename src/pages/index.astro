@@ -1,75 +1,50 @@
 ---
-import PortfolioListItem from "../components/PortfolioListItem.astro";
-import SectionTitle from "../components/SectionTitle.astro";
-import Layout from "../layouts/Layout.astro";
-
-const portfolios = [
-  {
-    title: "Portfolio 1",
-    description: "This is my first portfolio",
-    imageSrc: "https://via.placeholder.com/150",
-    link: "#",
-  },
-  {
-    title: "Portfolio 2",
-    description: "This is my second portfolio",
-    imageSrc: "https://via.placeholder.com/150",
-    link: "#",
-  },
-  {
-    title: "Portfolio 3",
-    description: "This is my third portfolio",
-    imageSrc: "https://via.placeholder.com/150",
-    link: "#",
-  },
-];
-const articles = [
-  {
-    title: "Article 1",
-    description: "This is my first article",
-    link: "#",
-  },
-  {
-    title: "Article 2",
-    description: "This is my second article",
-    link: "#",
-  },
-  {
-    title: "Article 3",
-    description: "This is my third article",
-    link: "#",
-  },
-];
+import Layout from "../components/layouts/Layout.astro";
+import LoadingScreen from "../components/layouts/LoadingScreen.astro";
+import SpaceBackground from "../components/layouts/SpaceBackground.astro";
+import AboutMe from "../sections/about-me/components/AboutMe.astro";
+import ColoredMessages from "../sections/colored-messages/components/ColoredMessages.astro";
+import GalaxyMV from "../sections/mv/components/GalaxyMV/GalaxyMV";
+import Portfolios from "../sections/portfolios/components/Portfolios.astro";
 ---
 
-<Layout>
-  <section>MV</section>
-  <section>
-    <SectionTitle title="About Me" />
-    <div>
-      <div>
-        <img src="" alt="profile picture" />
+<Layout title="Animated MV">
+  <LoadingScreen />
+  <div id="content" class="hidden">
+    <SpaceBackground />
+    <main>
+      <div class="mv-section">
+        <GalaxyMV client:load />
       </div>
-    </div>
-  </section>
-  <section>
-    <SectionTitle title="Portfolios" />
-    <ul>
-      {
-        portfolios.map((portfolio) => (
-          <li>
-            <PortfolioListItem
-              title={portfolio.title}
-              description={portfolio.description}
-              imageSrc={portfolio.imageSrc}
-              link={portfolio.link}
-            />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-  <section>
-    <SectionTitle title="Articles" />
-  </section>
+      <div class="content-section">
+        <ColoredMessages/>
+        <AboutMe />
+        <Portfolios />
+      </div>
+    </main>
+  </div>
 </Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  .mv-section {
+    position: relative;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  .content-section {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ColoredMessagesセクションの背景を設定 */
+  .content-section :global(.fixed) {
+    background: rgba(0, 0, 0, 0.9);
+  }
+</style>
+
