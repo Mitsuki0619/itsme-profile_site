@@ -1,10 +1,52 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export const ShootingStar: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	const createStar = useCallback((): {
+		x: number;
+		y: number;
+		endX: number;
+		endY: number;
+		speed: number;
+		opacity: number;
+		trail: { x: number; y: number; opacity: number }[];
+		distanceTraveled: number;
+		totalDistance: number;
+	} | null => {
+		const canvas = canvasRef.current;
+		if (!canvas) return null;
+
+		// 画面の左側または上側からスタート
+		const startFromLeft = Math.random() < 0.5;
+		const x = startFromLeft
+			? Math.random() * canvas.width * 0.3 - canvas.width * 0.2
+			: Math.random() * canvas.width;
+		const y = startFromLeft
+			? Math.random() * canvas.height
+			: Math.random() * canvas.height * 0.3 - canvas.height * 0.2;
+
+		// 右下方向の角度をランダムに設定（約0度〜60度）
+		const angle = (Math.random() * Math.PI) / 3;
+
+		// 軌道を長くするため、画面サイズの2倍の距離を設定
+		const distance = Math.sqrt(canvas.width ** 2 + canvas.height ** 2) * 1.5;
+
+		return {
+			x,
+			y,
+			endX: x + Math.cos(angle) * distance,
+			endY: y + Math.sin(angle) * distance,
+			speed: Math.random() * 1200 + 800,
+			opacity: 0,
+			trail: [],
+			distanceTraveled: 0,
+			totalDistance: Math.random() * 600 + 200,
+		};
+	}, []);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -13,122 +55,15 @@ export const ShootingStar: React.FC = () => {
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
 
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
+		const resizeCanvas = () => {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+		};
 
-		let animationFrameId: number;
+		resizeCanvas();
+		window.addEventListener("resize", resizeCanvas);
 
-		class Star {
-			x!: number;
-			y!: number;
-			endX!: number;
-			endY!: number;
-			speed!: number;
-			opacity!: number;
-			trail!: { x: number; y: number; opacity: number }[];
-			distanceTraveled!: number;
-			totalDistance!: number;
-
-			constructor() {
-				this.reset();
-			}
-
-			reset() {
-				// 画面の左側または上側からスタート
-				if (Math.random() < 0.5) {
-					// 左側からスタート
-					if (!canvas) return;
-					this.x = Math.random() * canvas.width * 0.3 - canvas.width * 0.2;
-					this.y = Math.random() * canvas.height;
-				} else {
-					// 上側からスタート
-					if (!canvas) return;
-					this.x = Math.random() * canvas.width;
-					this.y = Math.random() * canvas.height * 0.3 - canvas.height * 0.2;
-				}
-
-				// 右下方向の角度をランダムに設定（約0度〜60度）
-				const angle = (Math.random() * Math.PI) / 3;
-
-				// 軌道を長くするため、画面サイズの2倍の距離を設定
-				const distance =
-					Math.sqrt(
-						canvas.width * canvas.width + canvas.height * canvas.height,
-					) * 1.5;
-
-				this.endX = this.x + Math.cos(angle) * distance;
-				this.endY = this.y + Math.sin(angle) * distance;
-
-				this.speed = Math.random() * 1200 + 800;
-				this.opacity = 0;
-				this.trail = [];
-				this.distanceTraveled = 0;
-				this.totalDistance = Math.random() * 600 + 200;
-			}
-
-			update(deltaTime: number) {
-				const distance = this.speed * deltaTime;
-				const angle = Math.atan2(this.endY - this.y, this.endX - this.x);
-				this.x += Math.cos(angle) * distance;
-				this.y += Math.sin(angle) * distance;
-
-				this.distanceTraveled += distance;
-
-				if (this.distanceTraveled < 100) {
-					this.opacity = Math.min(this.distanceTraveled / 100, 1);
-				} else if (this.distanceTraveled > this.totalDistance - 200) {
-					this.opacity = Math.max(
-						(this.totalDistance - this.distanceTraveled) / 200,
-						0,
-					);
-				}
-
-				this.trail.unshift({ x: this.x, y: this.y, opacity: this.opacity });
-
-				if (this.trail.length > 30) {
-					this.trail.pop();
-				}
-
-				this.trail.forEach((point, index) => {
-					point.opacity *= 0.95;
-				});
-
-				if (
-					!canvas ||
-					this.distanceTraveled >= this.totalDistance ||
-					this.x > canvas.width ||
-					this.y > canvas.height
-				) {
-					return true;
-				}
-
-				return false;
-			}
-
-			draw(ctx: CanvasRenderingContext2D) {
-				ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`;
-				ctx.lineWidth = 2;
-				ctx.beginPath();
-				ctx.moveTo(this.x, this.y);
-
-				this.trail.forEach((point, index) => {
-					ctx.lineTo(point.x, point.y);
-					ctx.strokeStyle = `rgba(255, 255, 255, ${
-						point.opacity * this.opacity * (1 - index / this.trail.length)
-					})`;
-					ctx.stroke();
-					ctx.beginPath();
-					ctx.moveTo(point.x, point.y);
-				});
-
-				ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-				ctx.beginPath();
-				ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-				ctx.fill();
-			}
-		}
-
-		const stars: Star[] = [];
+		const stars: ReturnType<typeof createStar>[] = [];
 		let lastTime = 0;
 		let timeSinceLastStar = 0;
 
@@ -141,35 +76,80 @@ export const ShootingStar: React.FC = () => {
 			timeSinceLastStar += deltaTime;
 
 			if (timeSinceLastStar > 3 + Math.random() * 2) {
-				stars.push(new Star());
+				const newStar = createStar();
+				if (newStar) stars.push(newStar);
 				timeSinceLastStar = 0;
 			}
 
 			stars.forEach((star, index) => {
-				const finished = star.update(deltaTime);
-				star.draw(ctx);
-				if (finished) {
-					stars.splice(index, 1);
+				if (!star) return;
+
+				const distance = star.speed * deltaTime;
+				const angle = Math.atan2(star.endY - star.y, star.endX - star.x);
+				star.x += Math.cos(angle) * distance;
+				star.y += Math.sin(angle) * distance;
+
+				star.distanceTraveled += distance;
+
+				if (star.distanceTraveled < 100) {
+					star.opacity = Math.min(star.distanceTraveled / 100, 1);
+				} else if (star.distanceTraveled > star.totalDistance - 200) {
+					star.opacity = Math.max(
+						(star.totalDistance - star.distanceTraveled) / 200,
+						0,
+					);
 				}
+
+				star.trail.unshift({ x: star.x, y: star.y, opacity: star.opacity });
+
+				if (star.trail.length > 30) {
+					star.trail.pop();
+				}
+
+				star.trail.forEach((point, index) => {
+					point.opacity *= 0.95;
+				});
+
+				if (
+					star.distanceTraveled >= star.totalDistance ||
+					star.x > canvas.width ||
+					star.y > canvas.height
+				) {
+					stars.splice(index, 1);
+					return;
+				}
+
+				ctx.strokeStyle = `rgba(255, 255, 255, ${star.opacity})`;
+				ctx.lineWidth = 2;
+				ctx.beginPath();
+				ctx.moveTo(star.x, star.y);
+
+				star.trail.forEach((point, index) => {
+					ctx.lineTo(point.x, point.y);
+					ctx.strokeStyle = `rgba(255, 255, 255, ${
+						point.opacity * star.opacity * (1 - index / star.trail.length)
+					})`;
+					ctx.stroke();
+					ctx.beginPath();
+					ctx.moveTo(point.x, point.y);
+				});
+
+				ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+				ctx.beginPath();
+				ctx.arc(star.x, star.y, 2, 0, Math.PI * 2);
+				ctx.fill();
 			});
 
-			animationFrameId = requestAnimationFrame(animate);
+			requestAnimationFrame(animate);
 		};
 
-		animate(0);
-
-		const handleResize = () => {
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-		};
-
-		window.addEventListener("resize", handleResize);
+		const animationId = requestAnimationFrame(animate);
 
 		return () => {
-			window.removeEventListener("resize", handleResize);
-			cancelAnimationFrame(animationFrameId);
+			window.removeEventListener("resize", resizeCanvas);
+			cancelAnimationFrame(animationId);
 		};
-	}, []);
+	}, [createStar]);
 
 	return (
 		<canvas

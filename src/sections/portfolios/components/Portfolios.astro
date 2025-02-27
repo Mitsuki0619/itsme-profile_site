@@ -83,7 +83,15 @@ const portfolioItems: PortfolioItem[] = [
         <div class="portfolio-item" data-id={item.id}>
           <div class="portfolio-content">
             <div class="portfolio-image">
-              <Image src={item.image || "/placeholder.svg"} alt={item.title} width={600} height={400} />
+              <Image 
+                src={item.image || "/placeholder.svg"} 
+                alt={item.title} 
+                width={600} 
+                height={400} 
+                loading="lazy" 
+                format="webp"
+                quality={80}
+              />
             </div>
             <div class="portfolio-info">
               <h3>{item.title}</h3>

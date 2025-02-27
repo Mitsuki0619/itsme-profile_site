@@ -37,14 +37,14 @@ export function Lines({ count = 80 }) {
 		};
 	}, []);
 
-	const linesData = useMemo(() => {
+	const linesData = (() => {
 		return Array(count)
 			.fill(0)
 			.map(() => createNewLine());
-	}, [count, createNewLine]);
+	})();
 
-	const dummy = useMemo(() => new THREE.Object3D(), []);
-	const colorArray = useMemo(() => new Float32Array(count * 3), [count]);
+	const dummy = (() => new THREE.Object3D())();
+	const colorArray = (() => new Float32Array(count * 3))();
 
 	useEffect(() => {
 		linesData.forEach((line, i) => {
@@ -58,7 +58,7 @@ export function Lines({ count = 80 }) {
 		});
 	}, [linesData]);
 
-	useFrame((_, delta) => {
+	useFrame((state, delta) => {
 		if (!meshRef.current) return;
 
 		const maxDistance = Math.max(viewport.width, viewport.height) * 2;

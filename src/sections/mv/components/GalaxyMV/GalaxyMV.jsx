@@ -8,7 +8,6 @@ import {
 	Text3D,
 } from "@react-three/drei";
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
-import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass";
@@ -149,14 +148,15 @@ function Background() {
 }
 
 function Bloom() {
-	const { size, scene, camera } = useThree();
+	const { gl } = useThree();
 	const bloomPass = useRef();
 
 	useEffect(() => {
-		bloomPass.current.strength = 0.5;
-		bloomPass.current.radius = 0.8;
-		bloomPass.current.threshold = 0.1;
-	}, []);
+		gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		bloomPass.current.strength = 0.3;
+		bloomPass.current.radius = 0.5;
+		bloomPass.current.threshold = 0.2;
+	}, [gl]);
 
 	return (
 		<Effects disableGamma>
@@ -222,12 +222,6 @@ export default function GalaxyMV() {
 	useEffect(() => {
 		if (!containerRef.current) return;
 
-		gsap.to(containerRef.current, {
-			backgroundColor: "rgba(0, 0, 0, 0.85)",
-			duration: 1,
-			ease: "power2.inOut",
-		});
-
 		const handleLoadingComplete = () => {
 			setTimeout(() => {
 				setShowAnimations(true);
@@ -269,9 +263,11 @@ export default function GalaxyMV() {
 					height: "100%",
 				}}
 				camera={{ position: [0, 0, 12], fov: 60 }}
+				dpr={[1, 2]}
+				performance={{ min: 0.5 }}
 			>
 				<Background />
-				<OrbitControls enableZoom={false} enablePan={true} />
+				<OrbitControls enableZoom={false} enablePan={false} />
 				<Environment preset="night" />
 				<AnimatedText />
 				{showAnimations && (
@@ -281,13 +277,13 @@ export default function GalaxyMV() {
 					</>
 				)}
 				<Bloom />
-				<ambientLight intensity={0.3} />
-				<pointLight position={[10, 10, 10]} intensity={1.0} />
+				<ambientLight intensity={0.2} />
+				<pointLight position={[10, 10, 10]} intensity={0.5} />
 				<spotLight
 					position={[-5, 5, 0]}
 					angle={0.5}
 					penumbra={0.5}
-					intensity={1.0}
+					intensity={0.5}
 					castShadow
 				/>
 			</Canvas>
