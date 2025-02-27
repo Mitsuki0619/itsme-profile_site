@@ -1,4 +1,6 @@
 ---
+import { Image } from "astro:assets";
+import avatarImage from "../../../assets/images/avatar.png";
 ---
 
 <section id="about-me-section" class="about-me">
@@ -6,18 +8,64 @@
     <h1 class="title">About Me</h1>
     <div class="profile">
       <div class="avatar">
-        <div class="avatar-placeholder">Your Photo Here</div>
+        <Image src={avatarImage || "/placeholder.svg"}  alt="Mitsuki Iwamura's avatar"/>
       </div>
       <div class="bio">
-        <p class="bio-paragraph">
-          Welcome to my cosmic corner of the web! I'm a passionate developer with a love for creating digital experiences that are out of this world. Just like the vast universe around us, my skills and interests are ever-expanding.
-        </p>
-        <p class="bio-paragraph">
-          From front-end technologies that shine like distant stars to back-end systems as complex as galactic cores, I'm always exploring new horizons in the world of web development.
-        </p>
-        <p class="bio-paragraph">
-          When I'm not coding, you might find me stargazing, reading sci-fi, or planning my next space-themed project. Let's embark on a journey through the digital cosmos together!
-        </p>
+        <h2 class="bio-paragraph">
+          岩村 充基
+        </h2>
+        <div class="bio-paragraph">
+          1999年生まれ、大阪在住。フロントエンドエンジニア。
+        </div>
+        <div class="bio-paragraph">
+          2021年10月からWebエンジニアとして活動しています。
+          ReactやTypeScriptなどのモダンな技術スタックによるフロントエンド開発を主戦場としていますが、バックエンド（PHP Laravel）も経験があります。
+        </div>
+        <div class="bio-paragraph">
+          <strong>趣味</strong>
+          <ul>
+            <li>ギター/ベース</li>
+            <li>ゲーム</li>
+            <li>プログラミング</li>
+            <li>料理</li>
+          </ul>
+        </div>
+        <div class="bio-paragraph">
+          <strong>スキル</strong>
+          <ul>
+            <li>HTML5</li>
+            <li>CSS3</li>
+            <li>JavaScript</li>
+            <li>TypeScript</li>
+            <li>React</li>
+            <li>Next.js</li>
+            <li>Remix</li>
+            <li>Vue.js</li>
+            <li>Astro</li>
+            <li>TailwindCSS</li>
+            <li>PHP</li>
+            <li>Laravel</li>
+            <li>Go</li>
+            <li>Node.js</li>
+            <li>Prisma</li>
+            <li>GraphQL</li>
+            <li>PostgresSQL</li>
+            <li>MySQL</li>
+            <li>Docker</li>
+            <li>Vercel</li>
+            <li>Cloudflare Pages/Workers</li>
+            <li>Git</li>
+            <li>GitHub</li>
+            <li>VSCode</li>
+          </ul>
+        </div>
+        <div>
+          <strong>得意なこと</strong>
+          <p>
+            ・フロントエンド開発（React, TypeScript）<br />
+            ・フロントエンド設計
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -33,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const aboutSection = document.querySelector('#about-me-section');
   const title = aboutSection?.querySelector('.title');
   const avatar = aboutSection?.querySelector('.avatar');
-  const bioParagraphs = aboutSection?.querySelectorAll('.bio-paragraph');
+  const bioContent = aboutSection?.querySelectorAll('.bio > *');
 
-  if (aboutSection && title && avatar && bioParagraphs) {
+  if (aboutSection && title && avatar && bioContent) {
     // Title animation
     gsap.from(title, {
       opacity: 0,
@@ -62,15 +110,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Bio paragraphs animation
-    bioParagraphs.forEach((paragraph, index) => {
-      gsap.from(paragraph, {
+    // Bio content animation
+    bioContent.forEach((element, index) => {
+      gsap.from(element, {
         opacity: 0,
-        x: index % 2 === 0 ? -50 : 50,
+        y: 20,
         duration: 0.8,
         ease: 'power2.out',
+        delay: index * 0.1,
         scrollTrigger: {
-          trigger: paragraph,
+          trigger: element,
           start: 'top 85%',
           toggleActions: 'play none none reverse'
         }
@@ -119,28 +168,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 .avatar {
   flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 200px;
+  height: 200px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-.avatar-placeholder {
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 1rem;
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .bio {
   color: #ffffff;
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-.bio p + p {
-  margin-top: 1.5rem;
+.bio h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #3498db;
+}
+
+.bio-paragraph {
+  margin-bottom: 1rem;
+}
+
+.bio strong {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.bio ul {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bio li {
+  background-color: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
@@ -152,21 +227,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   .avatar {
+    width: 150px;
+    height: 150px;
     margin-bottom: 2rem;
-  }
-
-  .avatar-placeholder {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
   }
 
   .bio {
     width: 100%;
   }
 
-  .bio-paragraph {
-    text-align: left;
+  .bio h2 {
+    font-size: 1.8rem;
+  }
+
+  .bio ul {
+    justify-content: center;
   }
 }
 </style>
