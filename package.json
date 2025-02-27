@@ -24,7 +24,6 @@
     "gsap": "^3.12.7",
     "postprocessing": "^6.36.7",
     "react": "^18.3.1",
-    "react-compiler-runtime": "19.0.0-beta-e1e972c-20250221",
     "react-dom": "^18.3.1",
     "sharp": "^0.33.5",
     "swiper": "^11.2.4",
@@ -34,7 +33,6 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/three": "^0.173.0",
-    "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
     "wrangler": "^3.109.3"
   }
 }

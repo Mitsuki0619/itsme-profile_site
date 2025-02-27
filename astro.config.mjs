@@ -7,20 +7,9 @@ import cloudflare from "@astrojs/cloudflare";
 
 import sitemap from "@astrojs/sitemap";
 
-const compilerConfig = {
-  target: "18",
-};
-
 // https://astro.build/config
 export default defineConfig({
-  integrations: [
-    react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler", compilerConfig]],
-      },
-    }),
-    sitemap(),
-  ],
+  integrations: [react(), sitemap()],
   build: {
     inlineStylesheets: "auto",
   },
