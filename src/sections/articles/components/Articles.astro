@@ -1,0 +1,196 @@
+---
+import ArticleCard from "./ArticleCard.astro";
+
+const articles = [
+	{
+		title: "The Future of Web Development",
+		description:
+			"Explore the latest trends and technologies shaping the future of web development. From revolutionary frameworks to cutting-edge tools, discover what's next in the world of web development.",
+		link: "/articles/future-of-web-development",
+		emoji: "🚀",
+	},
+	{
+		title: "Mastering React Hooks",
+		description:
+			"Dive deep into React Hooks and learn how to build more efficient and maintainable components. Understand the power of useState, useEffect, and custom hooks in modern React applications.",
+		link: "/articles/mastering-react-hooks",
+		emoji: "⚛️",
+	},
+	{
+		title: "Building Scalable APIs with GraphQL",
+		description:
+			"Discover how GraphQL can help you build more flexible and efficient APIs for your applications. Learn best practices for schema design, resolvers, and client integration.",
+		link: "/articles/building-scalable-apis-graphql",
+		emoji: "🌐",
+	},
+];
+---
+
+<section id="articles-section" class="articles-section">
+  <div class="content">
+    <h2 class="section-title">Articles</h2>
+    <div class="articles-list">
+      {articles.map((article, index) => (
+        <ArticleCard
+          title={article.title}
+          description={article.description}
+          link={article.link}
+          emoji={article.emoji}
+          index={index}
+        />
+      ))}
+    </div>
+    <div class="view-more-container">
+      <a href="/articles" class="view-more-button">記事一覧へ</a>
+    </div>
+  </div>
+</section>
+
+<script>
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const articlesSection = document.querySelector('#articles-section');
+  const title = articlesSection?.querySelector('.section-title');
+  const articleCards = articlesSection?.querySelectorAll('.article-card');
+
+  if (articlesSection && title && articleCards) {
+    const animateElement = (element: Element) => {
+      gsap.fromTo(element,
+        { opacity: 0, y: 10 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.3,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: element,
+            start: 'top 95%',
+            end: 'bottom 5%',
+            toggleActions: 'play none none reverse',
+          }
+        }
+      );
+    };
+
+    animateElement(title);
+
+    gsap.fromTo(articleCards,
+      { opacity: 0, y: 10 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.3,
+        ease: 'power2.out',
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: '.articles-list',
+          start: 'top 95%',
+          end: 'bottom 5%',
+          toggleActions: 'play none none reverse',
+        }
+      }
+    );
+
+    const viewMoreButton = articlesSection.querySelector('.view-more-button');
+    if (viewMoreButton) {
+      animateElement(viewMoreButton);
+    }
+
+    window.addEventListener('load', () => {
+      ScrollTrigger.refresh();
+    });
+  }
+});
+</script>
+
+<style>
+.articles-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem 400px; /* 上部のパディングを6remに増やし、下部に400pxの余白を追加 */
+  position: relative;
+  overflow: hidden;
+}
+
+.articles-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  z-index: -1;
+}
+
+.content {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.section-title {
+  color: #ffffff;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: normal;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.view-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.view-more-button {
+  background-color: #3498db;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.view-more-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .articles-section {
+    padding: 4rem 1rem 300px; /* モバイルデバイスでは上部と下部のパディングを少し減らす */
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .content {
+    max-width: 100%;
+  }
+}
+</style>
+

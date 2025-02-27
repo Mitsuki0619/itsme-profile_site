@@ -23,7 +23,7 @@ const portfolioItems: PortfolioItem[] = [
 		title: "on-suke | オンスケ - 予定管理アプリ",
 		image: onSukeThumbnail,
 		description:
-			"予定の登録、編集、削除といった基本的な予定表機能に加え、カレンダーで予定を確認できる機能や、予定に対してタスクが登録できたり、予定のカテゴリを登録できたりするアプリ。\nLINEアカウントと連携することで、毎日18時ごろに明日の予定がLINEのon-sukeアカウントから通知される。",
+			"予定の登録、編集、削除といった基本的な予定表機能に加え、カレンダーで予定を確認できる機能や、予定に対してタスクが登録できたり、予定のカテゴリを登録できたりするアプリ。LINEアカウントと連携することで、毎日18時ごろに明日の予定がLINEのon-sukeアカウントから通知される。",
 		bts: "スピーディに開発することを意識し、大体8人日程度で要件定義から実装まで終わった。 v0を活用したため、デザイン、スタイリングはほとんどAIに任せ、自身はシステム部分の開発に専念した。",
 		tags: [
 			{
@@ -75,9 +75,9 @@ const portfolioItems: PortfolioItem[] = [
 ];
 ---
 
-<section id="portfolios-section">
+<section class="portfolios-section">
   <div class="container">
-    <h2 class="section-title">Portfolio</h2>
+    <h2 class="section-title">Portfolios</h2>
     <div class="portfolio-grid">
       {portfolioItems.map((item) => (
         <div class="portfolio-item" data-id={item.id}>
@@ -103,7 +103,7 @@ const portfolioItems: PortfolioItem[] = [
             <div class="details-content">
               <h4>開発秘話</h4>
               <p>{item.bts}</p>
-              <h4>選定技術と軸</h4>
+              <h4>技術スタック</h4>
               <ul class="tech-list">
                 {item.tags.map((tag) => (
                   <li>
@@ -114,10 +114,10 @@ const portfolioItems: PortfolioItem[] = [
               </ul>
               <div class="action-buttons">
                 <a href={item.repository} target="_blank" rel="noopener noreferrer" class="cta-button repository-btn">
-                  ソースコードを見る
+                  ソースコード
                 </a>
                 <a href={item.url} target="_blank" rel="noopener noreferrer" class="cta-button demo-btn">
-                  訪問する
+                  アプリへ
                 </a>
               </div>
             </div>
@@ -198,20 +198,19 @@ const portfolioItems: PortfolioItem[] = [
       });
     });
 
-    // ホバーアニメーション
-    portfolioItems.forEach(item => {
-      item.addEventListener('mouseenter', () => {
-        gsap.to(item, {
-          scale: 1.03,
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
+    // Tag hover effect
+    const tags = document.querySelectorAll('.tag');
+    tags.forEach(tag => {
+      tag.addEventListener('mouseenter', () => {
+        gsap.to(tag, {
+          scale: 1.05,
           duration: 0.2,
           ease: 'power2.out'
         });
       });
-      item.addEventListener('mouseleave', () => {
-        gsap.to(item, {
+      tag.addEventListener('mouseleave', () => {
+        gsap.to(tag, {
           scale: 1,
-          boxShadow: '0 15px 35px rgba(0, 0, 0, 0.3)',
           duration: 0.2,
           ease: 'power2.out'
         });
@@ -221,7 +220,7 @@ const portfolioItems: PortfolioItem[] = [
 </script>
 
 <style>
-  #portfolios-section {
+  .portfolios-section {
     background-color: #050505;
     min-height: 100vh;
     padding: 6rem 0;
@@ -271,7 +270,6 @@ const portfolioItems: PortfolioItem[] = [
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
     align-self: start;
@@ -324,6 +322,8 @@ const portfolioItems: PortfolioItem[] = [
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: help;
   }
 
   .portfolio-description {
@@ -331,6 +331,7 @@ const portfolioItems: PortfolioItem[] = [
     line-height: 1.6;
     margin-bottom: 1rem;
     flex-grow: 1;
+    white-space: pre-wrap;
   }
 
   .expand-btn {

@@ -131,7 +131,7 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     }
   }
 
-  function updateStarGlow(star) {
+  function updateStarGlow(star: HTMLDivElement) {
     const opacity = parseFloat(star.style.opacity);
     const size = parseFloat(star.style.width);
     const glowSize = size * (1 + opacity * 15);
@@ -140,10 +140,10 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
   }
 
   function initParallax() {
-    const background = document.querySelector('.space-background');
-    const starsContainer = document.querySelector('.stars-container');
-    const nebulaContainer = document.querySelector('.nebula-container');
-    const shootingStarsContainer = document.querySelector('.shooting-stars-container');
+    const background = document.querySelector('.space-background') as HTMLElement;
+    const starsContainer = document.querySelector('.stars-container') as HTMLElement;
+    const nebulaContainer = document.querySelector('.nebula-container') as HTMLElement;
+    const shootingStarsContainer = document.querySelector('.shooting-stars-container') as HTMLElement;
 
     window.addEventListener('scroll', () => {
       const scrollY = window.scrollY;
@@ -157,10 +157,8 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded');
     initStars();
     initParallax();
-    console.log('Background initialized');
   });
 </script>
 
