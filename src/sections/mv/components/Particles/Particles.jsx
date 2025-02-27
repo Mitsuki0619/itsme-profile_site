@@ -1,60 +1,60 @@
-"use client";
-
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
-
-const createParticle = () => {
-	const phi = Math.random() * Math.PI * 2;
-	const theta = Math.random() * Math.PI;
-	const radius = Math.random() * 2;
-	const speed = Math.random() * 0.08;
-
-	const x = radius * Math.sin(theta) * Math.cos(phi);
-	const y = radius * Math.sin(theta) * Math.sin(phi);
-	const z = radius * Math.cos(theta);
-
-	const maxLife = Math.random() * 20 + 5;
-	const isLarge = Math.random() < 0.1;
-
-	return {
-		position: new THREE.Vector3(x, y, z),
-		velocity: new THREE.Vector3(x, y, z).normalize().multiplyScalar(speed),
-		scale: isLarge ? Math.random() * 0.15 + 0.05 : Math.random() * 0.05 + 0.02,
-		life: maxLife,
-		maxLife: maxLife,
-		color: new THREE.Color(
-			0.6 + Math.random() * 0.4,
-			0.8 + Math.random() * 0.2,
-			1,
-		),
-		isLarge,
-		opacity: 0,
-	};
-};
 
 export function Particles({ count = 200 }) {
 	const meshRef = useRef();
 	const { viewport } = useThree();
 	const timeRef = useRef(0);
 
-	const particlesData = useMemo(() => {
+	const createParticle = () => {
+		const phi = Math.random() * Math.PI * 2;
+		const theta = Math.random() * Math.PI;
+		const radius = Math.random() * 2;
+		const speed = Math.random() * 0.08;
+
+		const x = radius * Math.sin(theta) * Math.cos(phi);
+		const y = radius * Math.sin(theta) * Math.sin(phi);
+		const z = radius * Math.cos(theta);
+
+		const maxLife = Math.random() * 20 + 5;
+		const isLarge = Math.random() < 0.1;
+
+		return {
+			position: new THREE.Vector3(x, y, z),
+			velocity: new THREE.Vector3(x, y, z).normalize().multiplyScalar(speed),
+			scale: isLarge
+				? Math.random() * 0.15 + 0.05
+				: Math.random() * 0.05 + 0.02,
+			life: maxLife,
+			maxLife: maxLife,
+			color: new THREE.Color(
+				0.6 + Math.random() * 0.4,
+				0.8 + Math.random() * 0.2,
+				1,
+			),
+			isLarge,
+			opacity: 0,
+		};
+	};
+
+	const particlesData = (() => {
 		return Array(count)
 			.fill(0)
 			.map(() => createParticle());
-	}, [count]);
+	})();
 
-	const dummy = useMemo(() => new THREE.Object3D(), []);
-	const colorArray = useMemo(() => new Float32Array(count * 3), [count]);
+	const dummy = (() => new THREE.Object3D())();
+	const colorArray = (() => new Float32Array(count * 3))();
 
 	useEffect(() => {
 		timeRef.current = 0;
-		particlesData.forEach((particle, _) => {
+		particlesData.forEach((particle, i) => {
 			gsap.to(particle, {
 				opacity: 0.6,
 				duration: 0.5,
-				delay: 0.1,
+				delay: 0,
 				ease: "power2.out",
 			});
 		});

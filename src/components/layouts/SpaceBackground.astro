@@ -26,6 +26,7 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     z-index: 0;
     background: linear-gradient(135deg, #0f0828 0%, #0c1526 100%);
     overflow: hidden;
+    will-change: transform;
   }
 
   .stars-container,
@@ -37,6 +38,7 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     width: 100%;
     height: 100%;
     pointer-events: none;
+    will-change: transform;
   }
 
   .nebula {
@@ -44,6 +46,7 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     filter: blur(60px);
     opacity: 0.5;
     mix-blend-mode: screen;
+    will-change: transform;
   }
 
   .nebula-1 {
@@ -87,6 +90,7 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     opacity: 0;
+    will-change: opacity, box-shadow;
   }
 
   .shooting-stars-container {
@@ -107,13 +111,16 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     const container = document.querySelector('.stars-container');
     if (!container) return;
 
-    for (let i = 0; i < 400; i++) {
+    const starCount = Math.min(400, Math.floor((window.innerWidth * window.innerHeight) / 3000));
+    const fragment = document.createDocumentFragment();
+
+    for (let i = 0; i < starCount; i++) {
       const star = document.createElement('div');
       star.className = 'star';
       star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
       star.style.left = `${Math.random() * 100}%`;
       star.style.top = `${Math.random() * 200}%`;
-      
+
       gsap.fromTo(star,
         { opacity: 0 },
         {
@@ -127,8 +134,10 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
         }
       );
 
-      container.appendChild(star);
+      fragment.appendChild(star);
     }
+
+    container.appendChild(fragment);
   }
 
   function updateStarGlow(star: HTMLDivElement) {
@@ -145,16 +154,40 @@ import { ShootingStar } from "./ShootingStar/ShootingStar";
     const nebulaContainer = document.querySelector('.nebula-container') as HTMLElement;
     const shootingStarsContainer = document.querySelector('.shooting-stars-container') as HTMLElement;
 
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const speed = 0.5;
+    let lastScrollY = window.scrollY;
+    let ticking = false;
 
-      background.style.transform = `translateY(${-scrollY * speed * 0.1}px)`;
-      starsContainer.style.transform = `translateY(${-scrollY * speed * 0.2}px)`;
-      nebulaContainer.style.transform = `translateY(${-scrollY * speed * 0.3}px)`;
-      shootingStarsContainer.style.transform = `translateY(${-scrollY * speed * 0.4}px)`;
-    });
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const speed = 0.5;
+
+          background.style.transform = `translateY(${-scrollY * speed * 0.1}px)`;
+          starsContainer.style.transform = `translateY(${-scrollY * speed * 0.2}px)`;
+          nebulaContainer.style.transform = `translateY(${-scrollY * speed * 0.3}px)`;
+          shootingStarsContainer.style.transform = `translateY(${-scrollY * speed * 0.4}px)`;
+
+          lastScrollY = scrollY;
+          ticking = false;
+        });
+
+        ticking = true;
+      }
+    }, { passive: true });
   }
+
+  let resizeTimer: NodeJS.Timeout | undefined;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const container = document.querySelector('.stars-container');
+      if (container) {
+        container.innerHTML = '';
+        initStars();
+      }
+    }, 250);
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     initStars();
