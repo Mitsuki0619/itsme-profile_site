@@ -41,7 +41,7 @@ const articles = [
       ))}
     </div>
     <div class="view-more-container">
-      <a href="/articles" class="view-more-button">View More</a>
+      <a href="/articles" class="view-more-button">記事一覧へ</a>
     </div>
   </div>
 </section>
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: 6rem 2rem 400px; /* 上部のパディングを6remに増やし、下部に400pxの余白を追加 */
   position: relative;
   overflow: hidden;
 }
@@ -125,8 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
   backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
   z-index: -1;
 }
 
@@ -178,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 @media (max-width: 768px) {
   .articles-section {
-    padding: 3rem 1rem;
+    padding: 4rem 1rem 300px; /* モバイルデバイスでは上部と下部のパディングを少し減らす */
   }
 
   .section-title {
