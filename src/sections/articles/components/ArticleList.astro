@@ -1,0 +1,23 @@
+---
+import { fetchZennArticles } from "../api/fetchZennArticles";
+import ArticleCard from "./ArticleCard.astro";
+
+const articles = await fetchZennArticles();
+---
+<div class="articles-list">
+  {articles.map((article, index) => (
+    <ArticleCard
+      title={article.title}
+      path={article.path}
+      emoji={article.emoji}
+      index={index}
+    />
+  ))}
+</div>
+<style>
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+</style>
