@@ -1,29 +1,8 @@
 ---
+import { fetchZennArticles } from "../api/fetchZennArticles";
 import ArticleCard from "./ArticleCard.astro";
 
-const articles = [
-	{
-		title: "The Future of Web Development",
-		description:
-			"Explore the latest trends and technologies shaping the future of web development. From revolutionary frameworks to cutting-edge tools, discover what's next in the world of web development.",
-		link: "/articles/future-of-web-development",
-		emoji: "🚀",
-	},
-	{
-		title: "Mastering React Hooks",
-		description:
-			"Dive deep into React Hooks and learn how to build more efficient and maintainable components. Understand the power of useState, useEffect, and custom hooks in modern React applications.",
-		link: "/articles/mastering-react-hooks",
-		emoji: "⚛️",
-	},
-	{
-		title: "Building Scalable APIs with GraphQL",
-		description:
-			"Discover how GraphQL can help you build more flexible and efficient APIs for your applications. Learn best practices for schema design, resolvers, and client integration.",
-		link: "/articles/building-scalable-apis-graphql",
-		emoji: "🌐",
-	},
-];
+const articles = await fetchZennArticles();
 ---
 
 <section id="articles-section" class="articles-section">
@@ -33,15 +12,14 @@ const articles = [
       {articles.map((article, index) => (
         <ArticleCard
           title={article.title}
-          description={article.description}
-          link={article.link}
+          path={article.path}
           emoji={article.emoji}
           index={index}
         />
       ))}
     </div>
     <div class="view-more-container">
-      <a href="/articles" class="view-more-button">記事一覧へ</a>
+      <a href="https://zenn.dev/matty5791" class="view-more-button">記事一覧へ</a>
     </div>
   </div>
 </section>
