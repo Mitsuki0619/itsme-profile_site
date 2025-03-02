@@ -21,7 +21,9 @@ import Portfolios from "../sections/portfolios/components/Portfolios.astro";
         <ColoredMessages/>
         <AboutMe />
         <Portfolios />
-        <Articles server:defer/>
+        <Articles server:defer>
+          <div slot="fallback" />
+        </Articles>
       </div>
     </main>
   </div>
