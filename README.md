@@ -1,48 +1,39 @@
-# Astro Starter Kit: Basics
+# プロフィール・ポートフォリオサイト
 
-```sh
-npm create astro@latest -- --template basics
+※本番運用中の URL：https://mitsukiiwamura.pages.dev/
+
+## 起動手順
+
+本リポジトリをクローン後、下記のコマンドを実行する
+
+```
+pnpm i
+pnpm dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## 開発秘話
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+実はほとんど v0 がコードを書いている。
+自分はデザインを考え、それをプロンプトに落とし込んで v0 に指示をだしつつ、コードを調整した。
+（astro に加え、three.js や gsap なども書いてしまう v0 に対し AI 驚き屋になってしまった）
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## 主要選定技術と意見
 
-## 🚀 Project Structure
+**アプリケーション**
 
-Inside of your Astro project, you'll see the following folders and files:
+- Astro：動的な処理も特にないので静的サイトに特化している Astro を選定。余りチューニングとかせずとも高パフォーマンスが発揮できていいと思った。
+- React：three.js を宣言的に使いたかったので、react-three-fiber を導入すべく MV 部分で react を使用
+- その他：three.js, gsap
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+**インフラ**
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+- Cloudflare Pages：使用経験もあり、無料で早いので選定
 
-## 🧞 Commands
+**開発環境**
 
-All commands are run from the root of the project, from a terminal:
+- Biome：早いので選定したものの、Astro のサポートがまだ微妙な気がする。。。次に Astro 使う場合は prettier・ESLint になりそう。
+- React Compiler：まだベータとはいえ、導入するメリットのほうがでかいと感じるため採用。もうプロダクトでも使っていいとは思ってる。
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## まだ改善が見込める点・未実装機能
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- 自信のテックブログサイトを構築し、それを Articles に埋め込みたい
