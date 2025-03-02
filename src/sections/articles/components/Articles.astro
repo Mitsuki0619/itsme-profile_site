@@ -1,23 +1,20 @@
 ---
-import { fetchZennArticles } from "../api/fetchZennArticles";
-import ArticleCard from "./ArticleCard.astro";
-
-const articles = await fetchZennArticles();
+import ArticleCardSkelton from "./ArticleCardSkelton.astro";
+import ArticleList from "./ArticleList.astro";
 ---
 
 <section id="articles-section" class="articles-section">
   <div class="content">
     <h2 class="section-title">Articles</h2>
-    <div class="articles-list">
-      {articles.map((article, index) => (
-        <ArticleCard
-          title={article.title}
-          path={article.path}
-          emoji={article.emoji}
-          index={index}
-        />
-      ))}
-    </div>
+    <ArticleList server:defer>
+      <div slot="fallback">
+        {
+          Array(3).fill(0).map((_, i) => (
+            <ArticleCardSkelton key={i} />
+          ))
+        }
+      </div>
+    </ArticleList>
     <div class="view-more-container">
       <a href="https://zenn.dev/matty5791" target="_blank" rel="noopener noreferrer" class="view-more-button">記事一覧へ</a>
     </div>
@@ -125,12 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
   margin-bottom: 3rem;
   font-weight: normal;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-}
-
-.articles-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
 }
 
 .view-more-container {
